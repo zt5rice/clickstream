@@ -19,3 +19,12 @@ groups:
         annotations:
           summary: "API p95 latency above 1s"
           description: "API p95 latency exceeded 1s over the last 5 minutes."
+
+      - alert: ClickstreamDLQNonEmpty
+        expr: sum(kafka_topic_end_offset{topic="clicks.dlq"}) > 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "clicks.dlq contains messages"
+          description: "Unparseable events have been routed to the dead-letter topic."
