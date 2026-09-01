@@ -31,4 +31,5 @@ pythonpath = ["."]
 addopts = "-ra"
 markers = [
     "integration: integration tests requiring local services (Kafka/Postgres/ClickHouse); skipped when unavailable",
+    "spark: tests requiring PySpark + a JVM; skipped when unavailable",
 ]
