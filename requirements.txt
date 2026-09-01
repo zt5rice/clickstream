@@ -1,0 +1,2 @@
+# Pinned runtime dependencies (Python 3.11) - do not change versions casually.
+confluent-kafka==2.15.0
