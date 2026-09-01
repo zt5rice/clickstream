@@ -43,3 +43,26 @@ def test_zero_means_unlimited():
 def test_invalid_rate_rejected(env):
     with pytest.raises(ValueError):
         ProducerConfig.from_env(env)
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"rate": 0},
+        {"rate": -1},
+        {"duration_seconds": -1},
+        {"max_events": -1},
+        {"linger_ms": -1},
+        {"batch_size": 0},
+    ],
+)
+def test_invalid_values_rejected(kwargs):
+    with pytest.raises(ValueError):
+        ProducerConfig(**kwargs)
+
+
+def test_valid_edge_values_accepted():
+    config = ProducerConfig(duration_seconds=0, max_events=0, linger_ms=0)
+    assert config.duration_seconds == 0
+    assert config.max_events == 0
+    assert config.linger_ms == 0
