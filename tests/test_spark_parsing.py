@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from spark_jobs.parsing import ParseError, parse_event
+from spark_jobs.parsing import ParseError, parse_event, parse_message
 
 VALID = {
     "event_id": "123e4567-e89b-42d3-a456-426614174000",
@@ -65,3 +65,21 @@ def test_parse_rejects_invalid_value(field, value):
 def test_parse_accepts_product_page():
     data = dict(VALID, page="/product/42")
     assert parse_event(json.dumps(data))["page"] == "/product/42"
+
+
+def test_parse_message_returns_event_on_success():
+    result = parse_message(json.dumps(VALID))
+    assert result["error"] is None
+    assert result["event"] == {key: str(value) for key, value in VALID.items()}
+
+
+def test_parse_message_returns_error_on_failure():
+    result = parse_message("{bad json")
+    assert result["event"] is None
+    assert "invalid JSON" in result["error"]
+
+
+def test_parse_message_rejects_empty():
+    result = parse_message(None)
+    assert result["event"] is None
+    assert "empty" in result["error"]
