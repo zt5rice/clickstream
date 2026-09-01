@@ -1,0 +1,6 @@
+# Minimal Alertmanager config: collect alerts, no notifiers (demo).
+route:
+  receiver: default
+
+receivers:
+  - name: default
