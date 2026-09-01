@@ -74,6 +74,9 @@ def test_main_reports_missing_topics(capsys):
         patch.object(init_topics, "create_topics", return_value=[]),
         patch.object(init_topics, "verify_topics", return_value=[]),
     ):
-        exit_code = init_topics.main(["--bootstrap-servers", "broker:9092"])
+        exit_code = init_topics.main(
+            ["--bootstrap-servers", "broker:9092"],
+            timeout_seconds=0.1,
+        )
     assert exit_code == 1
     assert "ERROR: topics not ready" in capsys.readouterr().out
