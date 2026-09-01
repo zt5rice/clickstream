@@ -1,4 +1,5 @@
 # Pinned development dependencies (Python 3.11) - do not change versions casually.
+-r requirements.txt
 ruff==0.16.5
 pytest==9.1.1
 pytest-asyncio==1.4.0
