@@ -1,5 +1,5 @@
 # clickstream - local development tooling
-.PHONY: init up down ps logs test lint fmt check kind-up kind-down eks-apply eks-destroy
+.PHONY: init up down demo ps logs test lint fmt check kind-up kind-down eks-apply eks-destroy
 
 # Prefer the pinned tools inside .venv when present (after `make init`).
 RUFF ?= $(if $(wildcard .venv/bin/ruff),.venv/bin/ruff,ruff)
@@ -12,6 +12,9 @@ init: ## Create .venv and install pinned dev dependencies
 
 up:
 	docker compose up -d --build
+
+demo: ## Start the full stack in the foreground
+	docker compose up --build
 
 down:
 	docker compose down
