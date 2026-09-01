@@ -23,7 +23,7 @@ src = ["producer", "spark_jobs", "api", "etl", "tests"]
 select = ["E", "F", "I", "W", "B", "SIM", "UP"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["producer", "spark_jobs", "api", "etl", "init"]
+known-first-party = ["producer", "spark_jobs", "api", "etl", "init", "tests"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

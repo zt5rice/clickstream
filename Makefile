@@ -29,7 +29,7 @@ test:
 	$(PYTEST) tests/ -v
 
 test-ci: ## Run the fast test set (excludes slow-marked tests) for CI
-	$(PYTEST) tests/ -m "not slow" -v
+	$(PYTEST) tests/ -m "not slow and not integration" -v
 
 lint:
 	$(RUFF) check producer spark_jobs etl api tests
