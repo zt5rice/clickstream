@@ -3,8 +3,12 @@
 from datetime import datetime
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from api import db
 from api.config import Settings
+
+pytestmark = pytest.mark.slow
 
 _SETTINGS = Settings()
 

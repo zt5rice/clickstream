@@ -2,9 +2,13 @@
 
 from unittest.mock import MagicMock
 
+import pytest
+
 from producer import cli as producer_cli
 from producer.config import ProducerConfig
 from producer.schema import ClickEvent
+
+pytestmark = pytest.mark.slow
 
 _EVENT = ClickEvent(
     event_id="123e4567-e89b-42d3-a456-426614174000",
