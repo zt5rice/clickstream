@@ -27,6 +27,7 @@ known-first-party = ["producer", "spark_jobs", "api", "etl"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 addopts = "-ra"
 markers = [
     "integration: integration tests requiring local services (Kafka/Postgres/ClickHouse); skipped when unavailable",
