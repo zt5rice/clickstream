@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clickstream"
+version = "0.1.0"
+description = "Real-time clickstream streaming pipeline (Kafka + Spark Structured Streaming + EKS) - portfolio project"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "zt5rice" }]
+keywords = ["kafka", "spark", "clickstream", "streaming", "data-engineering"]
+
+[tool.setuptools.packages.find]
+include = ["producer*", "spark_jobs*", "api*", "etl*", "tests*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["producer", "spark_jobs", "api", "etl", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "B", "SIM", "UP"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["producer", "spark_jobs", "api", "etl"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = [
+    "integration: integration tests requiring local services (Kafka/Postgres/ClickHouse); skipped when unavailable",
+]
