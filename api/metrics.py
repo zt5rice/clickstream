@@ -29,6 +29,11 @@ kafka_consumer_lag = Gauge(
     "Kafka consumer lag per topic partition",
     ("topic", "partition"),
 )
+kafka_topic_end_offset = Gauge(
+    "kafka_topic_end_offset",
+    "Kafka end offset per topic partition (DLQ depth when topic is unconsumed)",
+    ("topic", "partition"),
+)
 
 
 def fetch_lag(consumer: KafkaConsumer, topic: str) -> list[dict[str, Any]]:
@@ -63,6 +68,7 @@ def refresh_lag_gauges(settings: Settings, topics: tuple[str, ...]) -> None:
     )
     try:
         for topic in topics:
+            _set_topic_end_offsets(consumer, topic)
             for row in fetch_lag(consumer, topic):
                 kafka_consumer_lag.labels(
                     topic=row["topic"],
@@ -70,6 +76,19 @@ def refresh_lag_gauges(settings: Settings, topics: tuple[str, ...]) -> None:
                 ).set(row["lag"])
     finally:
         consumer.close()
+
+
+def _set_topic_end_offsets(consumer: KafkaConsumer, topic: str) -> None:
+    """Expose the end offset of each partition (used for DLQ depth)."""
+    partitions = consumer.partitions_for_topic(topic)
+    if not partitions:
+        return
+    topic_partitions = [TopicPartition(topic, partition) for partition in sorted(partitions)]
+    end_offsets = consumer.end_offsets(topic_partitions)
+    for tp in topic_partitions:
+        end = end_offsets.get(tp)
+        if end is not None:
+            kafka_topic_end_offset.labels(topic=topic, partition=tp.partition).set(end)
 
 
 async def lag_collector_loop(

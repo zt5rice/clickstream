@@ -11,6 +11,7 @@ from api.config import Settings
 from api.metrics import (
     fetch_lag,
     kafka_consumer_lag,
+    kafka_topic_end_offset,
     refresh_lag_gauges,
 )
 
@@ -51,6 +52,7 @@ def test_fetch_lag_computes_lag_for_committed_partitions():
 
 def test_refresh_lag_gauges_sets_values():
     kafka_consumer_lag.clear()
+    kafka_topic_end_offset.clear()
     consumer_instance = MagicMock()
     consumer_instance.partitions_for_topic.return_value = {0}
     tp0 = TopicPartition("clicks.raw", 0)
@@ -65,3 +67,22 @@ def test_refresh_lag_gauges_sets_values():
         {"topic": "clicks.raw", "partition": "0"},
     )
     assert value == 30
+
+
+def test_refresh_lag_gauges_sets_end_offsets():
+    kafka_consumer_lag.clear()
+    kafka_topic_end_offset.clear()
+    consumer_instance = MagicMock()
+    consumer_instance.partitions_for_topic.return_value = {0}
+    tp0 = TopicPartition("clicks.dlq", 0)
+    consumer_instance.end_offsets.return_value = {tp0: 250}
+    consumer_instance.committed.return_value = None
+
+    with patch("api.metrics.KafkaConsumer", return_value=consumer_instance):
+        refresh_lag_gauges(Settings(), ("clicks.dlq",))
+
+    value = REGISTRY.get_sample_value(
+        "kafka_topic_end_offset",
+        {"topic": "clicks.dlq", "partition": "0"},
+    )
+    assert value == 250
