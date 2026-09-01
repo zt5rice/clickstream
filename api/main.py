@@ -2,20 +2,70 @@
 
 from __future__ import annotations
 
+import asyncio
+import time
+from contextlib import asynccontextmanager, suppress
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.responses import Response
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from . import db
 from .config import Settings
+from .metrics import (
+    http_request_duration_seconds,
+    http_requests_total,
+    lag_collector_loop,
+)
 
 settings = Settings()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    task = None
+    if settings.kafka_lag_refresh_seconds > 0:
+        topics = tuple(
+            topic.strip() for topic in settings.kafka_lag_topics.split(",") if topic.strip()
+        )
+        task = asyncio.create_task(
+            lag_collector_loop(settings, topics, settings.kafka_lag_refresh_seconds)
+        )
+    yield
+    if task is not None:
+        task.cancel()
+        with suppress(asyncio.CancelledError):
+            await task
+
 
 app = FastAPI(
     title="clickstream-api",
     description="Read-only REST/JSON API for the clickstream pipeline",
     version="0.1.0",
+    lifespan=lifespan,
 )
+
+
+@app.middleware("http")
+async def metrics_middleware(request: Request, call_next):
+    start = time.perf_counter()
+    response = await call_next(request)
+    http_requests_total.labels(
+        method=request.method,
+        path=request.url.path,
+        status=response.status_code,
+    ).inc()
+    http_request_duration_seconds.labels(
+        method=request.method,
+        path=request.url.path,
+    ).observe(time.perf_counter() - start)
+    return response
+
+
+@app.get("/metrics")
+def metrics() -> Response:
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 @app.get("/health")
