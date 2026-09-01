@@ -8,11 +8,12 @@ P1-04 pipeline: Kafka -> JSON parse (UDF) -> 2-minute watermark ->
   conversions, distinct users
 
 Sinks are configurable via ``SPARK_SINK_MODE``:
-console | memory | postgres | clickhouse | none.
+console | memory | postgres | clickhouse | all | none.
 
 * postgres (P1-05): idempotent ``ON CONFLICT`` upserts via psycopg
 * clickhouse (P1-06): raw events -> ``olap.clicks`` and window aggregates ->
   ``olap.page_views_1m`` via clickhouse-connect (ReplacingMergeTree)
+* all (P1-11): starts both the postgres and clickhouse sinks in parallel
 * DLQ (P1-07): parse failures are routed to ``clicks.dlq`` by a second
   streaming query, so the topic is read twice - an accepted trade-off for
   this demo (see PLAN.md).
@@ -155,13 +156,17 @@ def campaign_stats_1m(events: DataFrame) -> DataFrame:
 
 def start_sinks(events: DataFrame, page_views: DataFrame, campaign_stats: DataFrame) -> list[Any]:
     """Start configured sinks for the parsed-event and aggregation streams."""
-    if SINK_MODE not in ("console", "memory", "postgres", "clickhouse", "none"):
+    if SINK_MODE not in ("console", "memory", "postgres", "clickhouse", "all", "none"):
         raise ValueError(f"unsupported SPARK_SINK_MODE: {SINK_MODE!r}")
     queries: list[Any] = []
     if SINK_MODE == "postgres":
         return _start_postgres_sinks(page_views, campaign_stats)
     if SINK_MODE == "clickhouse":
         return _start_clickhouse_sinks(events, page_views)
+    if SINK_MODE == "all":
+        queries = _start_postgres_sinks(page_views, campaign_stats)
+        queries.extend(_start_clickhouse_sinks(events, page_views))
+        return queries
     if SINK_MODE in ("console", "memory"):
         for name, frame in (("page_views_1m", page_views), ("campaign_stats_1m", campaign_stats)):
             queries.append(_start_query(frame, name))
