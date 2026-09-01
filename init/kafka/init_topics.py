@@ -52,7 +52,7 @@ def verify_topics(
     return [name for name in topics if name in existing]
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: list[str] | None = None, timeout_seconds: float = 30.0) -> int:
     parser = argparse.ArgumentParser(description="Create clickstream Kafka topics")
     parser.add_argument(
         "--bootstrap-servers",
@@ -63,7 +63,7 @@ def main(argv: list[str] | None = None) -> int:
     admin = AdminClient({"bootstrap.servers": args.bootstrap_servers})
     created = create_topics(admin, TOPICS)
 
-    deadline = time.monotonic() + 30.0
+    deadline = time.monotonic() + timeout_seconds
     existing: list[str] = []
     while time.monotonic() < deadline:
         existing = verify_topics(admin, TOPICS)

@@ -39,4 +39,6 @@ jobs:
       - name: Lint
         run: make lint
       - name: Test
-        run: make test
+        # Skip slow-marked unit tests on CI to save Actions minutes;
+        # run them locally with `make test`.
+        run: make test-ci

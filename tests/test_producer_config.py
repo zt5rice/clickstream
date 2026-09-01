@@ -4,6 +4,8 @@ import pytest
 
 from producer.config import ProducerConfig
 
+pytestmark = pytest.mark.slow
+
 
 def test_defaults():
     config = ProducerConfig.from_env({})

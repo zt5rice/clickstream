@@ -1,5 +1,5 @@
 # clickstream - local development tooling
-.PHONY: init up down demo ps logs test lint fmt check kind-up kind-down eks-apply eks-destroy
+.PHONY: init up down demo ps logs test test-ci lint fmt check kind-up kind-down eks-apply eks-destroy
 
 # Prefer the pinned tools inside .venv when present (after `make init`).
 RUFF ?= $(if $(wildcard .venv/bin/ruff),.venv/bin/ruff,ruff)
@@ -27,6 +27,9 @@ logs:
 
 test:
 	$(PYTEST) tests/ -v
+
+test-ci: ## Run the fast test set (excludes slow-marked tests) for CI
+	$(PYTEST) tests/ -m "not slow" -v
 
 lint:
 	$(RUFF) check producer spark_jobs etl api tests
