@@ -56,6 +56,19 @@ def parse_event(raw: str) -> dict[str, str]:
     return event
 
 
+def parse_message(raw: str | None) -> dict[str, object]:
+    """Return ``{"event": <dict>|None, "error": <str>|None}``.
+
+    Used by the streaming job to split valid events from DLQ-bound messages.
+    """
+    if raw is None:
+        return {"event": None, "error": "empty Kafka message"}
+    try:
+        return {"event": parse_event(raw), "error": None}
+    except ParseError as exc:
+        return {"event": None, "error": str(exc)}
+
+
 def _validate(event: Mapping[str, str]) -> None:
     if event["event_type"] not in EVENT_TYPES:
         raise ParseError(f"invalid event_type: {event['event_type']!r}")
