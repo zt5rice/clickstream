@@ -7,9 +7,13 @@ P1-04 pipeline: Kafka -> JSON parse (UDF) -> 2-minute watermark ->
 * ``campaign_stats_1m``: per window, campaign_id -> events, views, clicks,
   conversions, distinct users
 
-Sinks are configurable via ``SPARK_SINK_MODE`` (console | memory | postgres | none).
-PostgreSQL sink (P1-05) uses idempotent ``ON CONFLICT`` upserts via psycopg;
-ClickHouse sink lands in P1-06; DLQ routing in P1-07.
+Sinks are configurable via ``SPARK_SINK_MODE``:
+console | memory | postgres | clickhouse | none.
+
+* postgres (P1-05): idempotent ``ON CONFLICT`` upserts via psycopg
+* clickhouse (P1-06): raw events -> ``olap.clicks`` and window aggregates ->
+  ``olap.page_views_1m`` via clickhouse-connect (ReplacingMergeTree)
+* DLQ routing lands in P1-07
 """
 
 from __future__ import annotations
@@ -89,7 +93,9 @@ def read_events(spark: SparkSession) -> DataFrame:
             "event_type",
             "page",
             "device",
+            "region",
             "campaign_id",
+            "referrer",
             F.to_timestamp("ts", "yyyy-MM-dd'T'HH:mm:ss'Z'").alias("ts"),
         )
         .withWatermark("ts", f"{WATERMARK_SECONDS} seconds")
@@ -131,17 +137,46 @@ def campaign_stats_1m(events: DataFrame) -> DataFrame:
     )
 
 
-def start_sinks(page_views: DataFrame, campaign_stats: DataFrame) -> list[Any]:
-    """Start configured sinks; ClickHouse sink lands in P1-06."""
-    if SINK_MODE not in ("console", "memory", "postgres", "none"):
+def start_sinks(events: DataFrame, page_views: DataFrame, campaign_stats: DataFrame) -> list[Any]:
+    """Start configured sinks for the parsed-event and aggregation streams."""
+    if SINK_MODE not in ("console", "memory", "postgres", "clickhouse", "none"):
         raise ValueError(f"unsupported SPARK_SINK_MODE: {SINK_MODE!r}")
     queries: list[Any] = []
     if SINK_MODE == "postgres":
         return _start_postgres_sinks(page_views, campaign_stats)
+    if SINK_MODE == "clickhouse":
+        return _start_clickhouse_sinks(events, page_views)
     if SINK_MODE in ("console", "memory"):
         for name, frame in (("page_views_1m", page_views), ("campaign_stats_1m", campaign_stats)):
             queries.append(_start_query(frame, name))
     return queries
+
+
+def _start_clickhouse_sinks(events: DataFrame, page_views: DataFrame) -> list[Any]:
+    """Start sinks writing raw events and page-view aggregates to ClickHouse."""
+    from .clickhouse_sink import ensure_schema, get_client, insert_clicks, insert_page_views
+
+    client = get_client()
+    try:
+        ensure_schema(client)
+    finally:
+        client.close()
+
+    clicks_query = (
+        events.writeStream.outputMode("append")
+        .foreachBatch(insert_clicks)
+        .option("checkpointLocation", f"{CHECKPOINT_LOCATION}/clicks_ch")
+        .queryName("clicks_ch")
+        .start()
+    )
+    page_views_query = (
+        page_views.writeStream.outputMode("update")
+        .foreachBatch(insert_page_views)
+        .option("checkpointLocation", f"{CHECKPOINT_LOCATION}/page_views_1m_ch")
+        .queryName("page_views_1m_ch")
+        .start()
+    )
+    return [clicks_query, page_views_query]
 
 
 def _start_postgres_sinks(page_views: DataFrame, campaign_stats: DataFrame) -> list[Any]:
@@ -188,7 +223,7 @@ def _start_query(frame: DataFrame, name: str) -> Any:
 def run() -> None:
     spark = create_spark_session()
     events = read_events(spark)
-    start_sinks(page_views_1m(events), campaign_stats_1m(events))
+    start_sinks(events, page_views_1m(events), campaign_stats_1m(events))
     spark.streams.awaitAnyTermination()
 
 
