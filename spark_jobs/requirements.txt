@@ -3,3 +3,6 @@
 # Not installed in the local venv: Spark runs in the compose container (P1-11),
 # and Spark-dependent tests are skipped when PySpark/Java are unavailable.
 pyspark==3.5.7
+
+# psycopg is used by the PostgreSQL sink (P1-05) for ON CONFLICT upserts.
+psycopg[binary]==3.3.5

@@ -7,8 +7,9 @@ P1-04 pipeline: Kafka -> JSON parse (UDF) -> 2-minute watermark ->
 * ``campaign_stats_1m``: per window, campaign_id -> events, views, clicks,
   conversions, distinct users
 
-Sinks are configurable via ``SPARK_SINK_MODE`` (console | memory | none).
-PostgreSQL/ClickHouse sinks land in P1-05/P1-06; DLQ routing in P1-07.
+Sinks are configurable via ``SPARK_SINK_MODE`` (console | memory | postgres | none).
+PostgreSQL sink (P1-05) uses idempotent ``ON CONFLICT`` upserts via psycopg;
+ClickHouse sink lands in P1-06; DLQ routing in P1-07.
 """
 
 from __future__ import annotations
@@ -131,14 +132,37 @@ def campaign_stats_1m(events: DataFrame) -> DataFrame:
 
 
 def start_sinks(page_views: DataFrame, campaign_stats: DataFrame) -> list[Any]:
-    """Start configured sinks; PostgreSQL/ClickHouse sinks land in P1-05/P1-06."""
-    if SINK_MODE not in ("console", "memory", "none"):
+    """Start configured sinks; ClickHouse sink lands in P1-06."""
+    if SINK_MODE not in ("console", "memory", "postgres", "none"):
         raise ValueError(f"unsupported SPARK_SINK_MODE: {SINK_MODE!r}")
     queries: list[Any] = []
+    if SINK_MODE == "postgres":
+        return _start_postgres_sinks(page_views, campaign_stats)
     if SINK_MODE in ("console", "memory"):
         for name, frame in (("page_views_1m", page_views), ("campaign_stats_1m", campaign_stats)):
             queries.append(_start_query(frame, name))
     return queries
+
+
+def _start_postgres_sinks(page_views: DataFrame, campaign_stats: DataFrame) -> list[Any]:
+    """Start foreachBatch sinks that upsert into curated PostgreSQL tables."""
+    from .postgres_sink import upsert_campaign_stats, upsert_page_views
+
+    page_views_query = (
+        page_views.writeStream.outputMode("update")
+        .foreachBatch(upsert_page_views)
+        .option("checkpointLocation", f"{CHECKPOINT_LOCATION}/page_views_1m_pg")
+        .queryName("page_views_1m_pg")
+        .start()
+    )
+    campaign_stats_query = (
+        campaign_stats.writeStream.outputMode("update")
+        .foreachBatch(upsert_campaign_stats)
+        .option("checkpointLocation", f"{CHECKPOINT_LOCATION}/campaign_stats_1m_pg")
+        .queryName("campaign_stats_1m_pg")
+        .start()
+    )
+    return [page_views_query, campaign_stats_query]
 
 
 def _start_query(frame: DataFrame, name: str) -> Any:
