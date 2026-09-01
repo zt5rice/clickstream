@@ -121,7 +121,7 @@ Grafana 展示 Kafka lag 与 API 延迟；`make test` 全绿；README + DESIGN.m
 |---|---|
 | Python | 3.11 |
 | Kafka (KRaft) | `apache/kafka:3.7.0` |
-| Spark | `bitnami/spark:3.5.4` |
+| Spark | `apache/spark:3.5.7` |
 | PostgreSQL | `postgres:16.4` |
 | ClickHouse | `clickhouse/clickhouse-server:24.8` |
 | Redis | `redis:7.4-alpine` |
