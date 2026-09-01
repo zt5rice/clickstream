@@ -13,7 +13,9 @@ console | memory | postgres | clickhouse | none.
 * postgres (P1-05): idempotent ``ON CONFLICT`` upserts via psycopg
 * clickhouse (P1-06): raw events -> ``olap.clicks`` and window aggregates ->
   ``olap.page_views_1m`` via clickhouse-connect (ReplacingMergeTree)
-* DLQ routing lands in P1-07
+* DLQ (P1-07): parse failures are routed to ``clicks.dlq`` by a second
+  streaming query, so the topic is read twice - an accepted trade-off for
+  this demo (see PLAN.md).
 """
 
 from __future__ import annotations
@@ -23,12 +25,13 @@ from typing import Any
 
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as F
-from pyspark.sql.types import StringType, StructField, StructType
+from pyspark.sql.types import BinaryType, StringType, StructField, StructType
 
-from .parsing import ParseError, parse_event
+from .parsing import parse_message
 
 KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 RAW_TOPIC = os.environ.get("KAFKA_TOPIC_RAW", "clicks.raw")
+DLQ_TOPIC = os.environ.get("KAFKA_TOPIC_DLQ", "clicks.dlq")
 WINDOW_MINUTES = 1
 WATERMARK_SECONDS = 120
 SINK_MODE = os.environ.get("SPARK_SINK_MODE", "console")
@@ -49,18 +52,14 @@ PARSED_SCHEMA = StructType(
     ]
 )
 
+PARSED_RESULT_SCHEMA = StructType(
+    [
+        StructField("event", PARSED_SCHEMA, True),
+        StructField("error", StringType(), True),
+    ]
+)
 
-def _safe_parse(raw: str | None) -> dict[str, str] | None:
-    """Parse one raw Kafka message; return None for unparseable input (DLQ in P1-07)."""
-    if raw is None:
-        return None
-    try:
-        return parse_event(raw)
-    except ParseError:
-        return None
-
-
-_parse_udf = F.udf(_safe_parse, PARSED_SCHEMA)
+_parse_udf = F.udf(parse_message, PARSED_RESULT_SCHEMA)
 
 
 def create_spark_session(app_name: str = "clickstream-aggregations") -> SparkSession:
@@ -72,9 +71,9 @@ def create_spark_session(app_name: str = "clickstream-aggregations") -> SparkSes
     )
 
 
-def read_events(spark: SparkSession) -> DataFrame:
-    """Read and parse clickstream events from Kafka."""
-    raw = (
+def read_raw(spark: SparkSession) -> DataFrame:
+    """Read the raw Kafka topic as a string column."""
+    return (
         spark.readStream.format("kafka")
         .option("kafka.bootstrap.servers", KAFKA_BOOTSTRAP_SERVERS)
         .option("subscribe", RAW_TOPIC)
@@ -82,10 +81,14 @@ def read_events(spark: SparkSession) -> DataFrame:
         .load()
         .select(F.col("value").cast(StringType()).alias("raw"))
     )
+
+
+def parse_events(raw: DataFrame) -> DataFrame:
+    """Parse raw messages and keep valid events (with a 2-minute watermark)."""
+    parsed = raw.select(_parse_udf("raw").alias("result"))
     return (
-        raw.select(_parse_udf("raw").alias("event"))
-        .where(F.col("event").isNotNull())
-        .select("event.*")
+        parsed.where(F.col("result.event").isNotNull())
+        .select("result.event.*")
         .select(
             "event_id",
             "user_id",
@@ -100,6 +103,19 @@ def read_events(spark: SparkSession) -> DataFrame:
         )
         .withWatermark("ts", f"{WATERMARK_SECONDS} seconds")
     )
+
+
+def parse_failures(raw: DataFrame) -> DataFrame:
+    """Keep unparseable messages for the dead-letter topic."""
+    parsed = raw.select(_parse_udf("raw").alias("result"), "raw")
+    return parsed.where(F.col("result.error").isNotNull()).select(
+        F.col("raw").cast(BinaryType()).alias("value")
+    )
+
+
+def read_events(spark: SparkSession) -> DataFrame:
+    """Read, parse, and validate clickstream events from Kafka."""
+    return parse_events(read_raw(spark))
 
 
 def page_views_1m(events: DataFrame) -> DataFrame:
@@ -222,9 +238,26 @@ def _start_query(frame: DataFrame, name: str) -> Any:
 
 def run() -> None:
     spark = create_spark_session()
-    events = read_events(spark)
+    raw = read_raw(spark)
+    events = parse_events(raw)
     start_sinks(events, page_views_1m(events), campaign_stats_1m(events))
+    start_dlq_sink(parse_failures(raw))
     spark.streams.awaitAnyTermination()
+
+
+def start_dlq_sink(failures: DataFrame) -> Any | None:
+    """Write parse failures to the dead-letter topic (second read of the source)."""
+    if SINK_MODE == "none":
+        return None
+    return (
+        failures.writeStream.outputMode("append")
+        .format("kafka")
+        .option("kafka.bootstrap.servers", KAFKA_BOOTSTRAP_SERVERS)
+        .option("topic", DLQ_TOPIC)
+        .option("checkpointLocation", f"{CHECKPOINT_LOCATION}/dlq")
+        .queryName("clicks_dlq")
+        .start()
+    )
 
 
 if __name__ == "__main__":
