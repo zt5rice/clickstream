@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     clickhouse_database: str = "olap"
 
     kafka_bootstrap_servers: str = "localhost:9092"
+    kafka_consumer_group: str = "clickstream-spark"
+    kafka_lag_refresh_seconds: int = 15
+    kafka_lag_topics: str = "clicks.raw,clicks.dlq"
 
     def postgres_dsn(self) -> str:
         return (
