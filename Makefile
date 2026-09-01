@@ -1,4 +1,14 @@
-.PHONY: up down ps logs test lint kind-up kind-down eks-apply eks-destroy
+# clickstream - local development tooling
+.PHONY: init up down ps logs test lint fmt check kind-up kind-down eks-apply eks-destroy
+
+# Prefer the pinned tools inside .venv when present (after `make init`).
+RUFF ?= $(if $(wildcard .venv/bin/ruff),.venv/bin/ruff,ruff)
+PYTEST ?= $(if $(wildcard .venv/bin/pytest),.venv/bin/pytest,pytest)
+
+init: ## Create .venv and install pinned dev dependencies
+	python3 -m venv .venv
+	.venv/bin/pip install --upgrade pip
+	.venv/bin/pip install -r requirements-dev.txt
 
 up:
 	docker compose up -d --build
@@ -13,10 +23,19 @@ logs:
 	docker compose logs -f
 
 test:
-	pytest tests/ -v
+	$(PYTEST) tests/ -v
 
 lint:
-	ruff check producer spark_jobs etl api tests
+	$(RUFF) check producer spark_jobs etl api tests
+
+fmt:
+	$(RUFF) format producer spark_jobs etl api tests
+	$(RUFF) check --fix producer spark_jobs etl api tests
+
+check: ## Lint, format-check, and run the test suite
+	$(RUFF) format --check producer spark_jobs etl api tests
+	$(RUFF) check producer spark_jobs etl api tests
+	$(PYTEST) tests/ -v
 
 kind-up:
 	kind create cluster --name clickstream
