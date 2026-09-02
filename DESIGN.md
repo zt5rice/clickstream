@@ -1,6 +1,6 @@
 # Real-Time Clickstream Streaming Pipeline — Design Document
 
-Status: v0.1 (scaffold) · Target: Data Engineer roles (e.g., Sony SIE Data Engineer II, Job ID )
+Status: v0.2 (Phase 1 local core pipeline complete) · Target: Data Engineer roles (e.g., Sony SIE Data Engineer II, Job ID )
 
 ## 1. Goal
 
@@ -169,3 +169,22 @@ clickstream/
 ├── sinks/             # Postgres / ClickHouse / OpenSearch / S3 adapters
 └── docs/              # decisions, learning notes
 ```
+
+## 12. As-Built — Phase 1 Measured Metrics
+
+The Phase 1 local core pipeline (P1-01…P1-17) is merged on `main` and verified
+end-to-end locally. Real measured values from a ~53-minute steady run
+(macOS + colima/Docker, `make up`, producer ~100 events/s):
+
+| Metric | Measured value |
+|---|---|
+| Producer throughput | ~100.0 events/s, 0 failed (~319k events in ~53 min) |
+| End-to-end freshness | 0 s (latest 1-min curated window is the current minute) |
+| DLQ depth | 0 |
+| API p50/p95 (client, n=50) | summary 25.6/32.9 ms · events/recent 46.9/73.1 ms · top/pages 10.4/14.6 ms |
+| API p50/p95 (Prometheus histogram) | summary 21/46 ms · events/recent 42/90 ms · top/pages 8.5/22 ms |
+| Storage after ~53 min | Postgres `curated.page_views_1m` 22,754 rows · ClickHouse `olap.clicks` 319,759 events |
+
+Measured 2026-09-02 06:54 UTC (= 2026-09-01 23:54 PDT). These are honest
+reference points from our own run — re-measure on your machine before quoting
+them (see `docs/demo-checklist.md` for reproduction steps).
