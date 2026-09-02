@@ -1,6 +1,6 @@
 # Clickstream — Phased Project Plan
 
-Status: v0.1 (planning) · Last updated: 2026-08-27
+Status: v0.2 (Phase 1 complete) · Last updated: 2026-09-02
 
 This document is the living execution plan for the clickstream portfolio project.
 It complements `DESIGN.md` (architecture / tech-stack coverage) and the docs in
@@ -107,7 +107,7 @@ reads from both (Postgres for curated aggregates, ClickHouse for raw/OLAP querie
 The DLQ path runs as a second streaming query and therefore reads the topic twice —
 an accepted demo trade-off (documented in DESIGN.md).
 
-## 3. Phase 1 — Local Core Pipeline (current session)
+## 3. Phase 1 — Local Core Pipeline (complete: 2026-09-01)
 
 Goal: `make up` starts the full stack locally; a producer emits click events;
 Spark aggregates them into curated tables; the API serves read-only queries;
@@ -183,33 +183,33 @@ tests and quick demos; the live pipeline uses the simulator.
 
 ### 3.6 Acceptance criteria
 
-- [ ] `make up` → all services healthy (no restart loops)
-- [ ] Producer emits events; Spark aggregates; data visible in Postgres + ClickHouse
-- [ ] API serves queries; `/metrics` exposes Prometheus data
-- [ ] Grafana dashboard shows Kafka lag / API latency panels with data
-- [ ] `make lint` and `make test` pass (integration tests auto-skip if no Docker)
-- [ ] README + DESIGN.md updated with real measured metrics (throughput, freshness,
+- [x] `make up` → all services healthy (no restart loops)
+- [x] Producer emits events; Spark aggregates; data visible in Postgres + ClickHouse
+- [x] API serves queries; `/metrics` exposes Prometheus data
+- [x] Grafana dashboard shows Kafka lag / API latency panels with data
+- [x] `make lint` and `make test` pass (integration tests auto-skip if no Docker)
+- [x] README + DESIGN.md updated with real measured metrics (throughput, freshness,
       API latency, Kafka lag)
 
 ### 3.7 To-dos (tracked in Linear: Milestone M1, one ticket per item)
 
-- [ ] **P1-01** Scaffold repo layout and root tooling (Makefile, .gitignore, pyproject.toml, requirements-dev.txt, .env.example)
-- [ ] **P1-02** Producer: event schema + deterministic simulator (weighted pages/devices/regions/campaigns/users/sessions, seed)
-- [ ] **P1-03** Producer: Kafka client (batching, retries, idempotence, compression, throughput logging, CLI)
-- [ ] **P1-04** Spark job: Kafka consume + JSON parse + watermark/window aggregation
-- [ ] **P1-05** Spark job: PostgreSQL sink (curated tables, ON CONFLICT upsert)
-- [ ] **P1-06** Spark job: ClickHouse sink (ReplacingMergeTree, raw events + window aggregates)
-- [ ] **P1-07** Spark job: DLQ routing for unparseable events
-- [ ] **P1-08** API: FastAPI health/ready endpoints + read-only query endpoints
-- [ ] **P1-09** API: Prometheus metrics (latency histogram, counters, Kafka lag gauges)
-- [ ] **P1-10** Init scripts: Postgres schema, ClickHouse schema, Kafka topics
-- [ ] **P1-11** docker-compose.yml: all services pinned + healthchecks + depends_on chains
-- [ ] **P1-12** Monitoring: Prometheus scrape configs, Alertmanager rules, Grafana dashboard provisioning
-- [ ] **P1-13** Tests: unit (serialization, simulator, config, API)
-- [ ] **P1-14** Tests: integration (Kafka, Postgres, full pipeline; auto-skip when infra down)
-- [ ] **P1-15** `make lint` + `make test` green
-- [ ] **P1-16** Full-stack bring-up + end-to-end verification (producer → Spark → PG/CH → API → Grafana)
-- [ ] **P1-17** Measure real metrics (throughput, freshness, API latency, lag) + update README/DESIGN.md/CI
+- [x] **P1-01** Scaffold repo layout and root tooling (Makefile, .gitignore, pyproject.toml, requirements-dev.txt, .env.example)
+- [x] **P1-02** Producer: event schema + deterministic simulator (weighted pages/devices/regions/campaigns/users/sessions, seed)
+- [x] **P1-03** Producer: Kafka client (batching, retries, idempotence, compression, throughput logging, CLI)
+- [x] **P1-04** Spark job: Kafka consume + JSON parse + watermark/window aggregation
+- [x] **P1-05** Spark job: PostgreSQL sink (curated tables, ON CONFLICT upsert)
+- [x] **P1-06** Spark job: ClickHouse sink (ReplacingMergeTree, raw events + window aggregates)
+- [x] **P1-07** Spark job: DLQ routing for unparseable events
+- [x] **P1-08** API: FastAPI health/ready endpoints + read-only query endpoints
+- [x] **P1-09** API: Prometheus metrics (latency histogram, counters, Kafka lag gauges)
+- [x] **P1-10** Init scripts: Postgres schema, ClickHouse schema, Kafka topics
+- [x] **P1-11** docker-compose.yml: all services pinned + healthchecks + depends_on chains
+- [x] **P1-12** Monitoring: Prometheus scrape configs, Alertmanager rules, Grafana dashboard provisioning
+- [x] **P1-13** Tests: unit (serialization, simulator, config, API)
+- [x] **P1-14** Tests: integration (Kafka, Postgres, full pipeline; auto-skip when infra down)
+- [x] **P1-15** `make lint` + `make test` green
+- [x] **P1-16** Full-stack bring-up + end-to-end verification (producer → Spark → PG/CH → API → Grafana)
+- [x] **P1-17** Measure real metrics (throughput, freshness, API latency, lag) + update README/DESIGN.md/CI
 
 ---
 
