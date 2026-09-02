@@ -18,8 +18,8 @@ class Settings(BaseSettings):
 
     clickhouse_host: str = "localhost"
     clickhouse_port: int = 8123
-    clickhouse_user: str = "default"
-    clickhouse_password: str = ""
+    clickhouse_user: str = "click"
+    clickhouse_password: str = "click"
     clickhouse_database: str = "olap"
 
     kafka_bootstrap_servers: str = "localhost:9092"

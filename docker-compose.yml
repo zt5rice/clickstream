@@ -9,12 +9,12 @@ services:
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT://kafka:29092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://:9092,INTERNAL://:29092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
@@ -103,13 +103,15 @@ services:
       POSTGRES_DB: clickstream
       CLICKHOUSE_HOST: clickhouse
       CLICKHOUSE_PORT: "8123"
-      CLICKHOUSE_USER: default
-      CLICKHOUSE_PASSWORD: ""
+      CLICKHOUSE_USER: click
+      CLICKHOUSE_PASSWORD: click
       CLICKHOUSE_DATABASE: olap
     command:
       - /opt/spark/bin/spark-submit
       - --master
       - spark://spark-master:7077
+      - --conf
+      - spark.jars.ivy=/tmp/.ivy2
       - --packages
       - org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.7
       - /opt/clickstream/spark_jobs/streaming_job.py
@@ -148,6 +150,11 @@ services:
   clickhouse:
     image: clickhouse/clickhouse-server:24.8
     container_name: clickstream-clickhouse
+    environment:
+      CLICKHOUSE_DB: olap
+      CLICKHOUSE_USER: click
+      CLICKHOUSE_PASSWORD: click
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
     ports:
       - "8123:8123"
       - "9000:9000"
@@ -186,8 +193,8 @@ services:
       POSTGRES_PASSWORD: click
       POSTGRES_DB: clickstream
       CLICKHOUSE_HOST: clickhouse
-      CLICKHOUSE_USER: default
-      CLICKHOUSE_PASSWORD: ""
+      CLICKHOUSE_USER: click
+      CLICKHOUSE_PASSWORD: click
       CLICKHOUSE_DATABASE: olap
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       KAFKA_CONSUMER_GROUP: clickstream-spark
