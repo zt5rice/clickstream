@@ -8,6 +8,7 @@ Topics:
 from __future__ import annotations
 
 import argparse
+import os
 import time
 
 from confluent_kafka.admin import AdminClient, NewTopic
@@ -52,14 +53,18 @@ def verify_topics(
     return [name for name in topics if name in existing]
 
 
-def main(argv: list[str] | None = None, timeout_seconds: float = 30.0) -> int:
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Create clickstream Kafka topics")
     parser.add_argument(
         "--bootstrap-servers",
-        default=DEFAULT_BOOTSTRAP_SERVERS,
-        help="Kafka bootstrap servers",
+        default=os.environ.get("KAFKA_BOOTSTRAP_SERVERS", DEFAULT_BOOTSTRAP_SERVERS),
+        help="Kafka bootstrap servers (env: KAFKA_BOOTSTRAP_SERVERS)",
     )
-    args = parser.parse_args(argv)
+    return parser
+
+
+def main(argv: list[str] | None = None, timeout_seconds: float = 30.0) -> int:
+    args = build_parser().parse_args(argv)
     admin = AdminClient({"bootstrap.servers": args.bootstrap_servers})
     created = create_topics(admin, TOPICS)
 

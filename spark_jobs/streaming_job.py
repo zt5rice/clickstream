@@ -28,7 +28,7 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.types import BinaryType, StringType, StructField, StructType
 
-from .parsing import parse_message
+from spark_jobs.parsing import parse_message
 
 KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 RAW_TOPIC = os.environ.get("KAFKA_TOPIC_RAW", "clicks.raw")
@@ -125,7 +125,7 @@ def page_views_1m(events: DataFrame) -> DataFrame:
         events.groupBy(F.window("ts", f"{WINDOW_MINUTES} minute"), "page", "device")
         .agg(
             F.sum(F.when(F.col("event_type") == "page_view", 1).otherwise(0)).alias("views"),
-            F.countDistinct("user_id").alias("users"),
+            F.approx_count_distinct("user_id").alias("users"),
         )
         .select(F.col("window.start").alias("window_start"), "page", "device", "views", "users")
     )
@@ -140,7 +140,7 @@ def campaign_stats_1m(events: DataFrame) -> DataFrame:
             F.sum(F.when(F.col("event_type") == "page_view", 1).otherwise(0)).alias("views"),
             F.sum(F.when(F.col("event_type") == "click", 1).otherwise(0)).alias("clicks"),
             F.sum(F.when(F.col("event_type") == "purchase", 1).otherwise(0)).alias("conversions"),
-            F.countDistinct("user_id").alias("users"),
+            F.approx_count_distinct("user_id").alias("users"),
         )
         .select(
             F.col("window.start").alias("window_start"),
@@ -175,7 +175,12 @@ def start_sinks(events: DataFrame, page_views: DataFrame, campaign_stats: DataFr
 
 def _start_clickhouse_sinks(events: DataFrame, page_views: DataFrame) -> list[Any]:
     """Start sinks writing raw events and page-view aggregates to ClickHouse."""
-    from .clickhouse_sink import ensure_schema, get_client, insert_clicks, insert_page_views
+    from spark_jobs.clickhouse_sink import (
+        ensure_schema,
+        get_client,
+        insert_clicks,
+        insert_page_views,
+    )
 
     client = get_client()
     try:
@@ -202,7 +207,18 @@ def _start_clickhouse_sinks(events: DataFrame, page_views: DataFrame) -> list[An
 
 def _start_postgres_sinks(page_views: DataFrame, campaign_stats: DataFrame) -> list[Any]:
     """Start foreachBatch sinks that upsert into curated PostgreSQL tables."""
-    from .postgres_sink import upsert_campaign_stats, upsert_page_views
+    import psycopg
+
+    from spark_jobs.postgres_sink import (
+        dsn,
+        ensure_schema,
+        upsert_campaign_stats,
+        upsert_page_views,
+    )
+
+    # Create the curated tables and *_staging tables if they are missing.
+    with psycopg.connect(dsn()) as conn:
+        ensure_schema(conn)
 
     page_views_query = (
         page_views.writeStream.outputMode("update")

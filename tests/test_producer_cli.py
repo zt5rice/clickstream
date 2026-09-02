@@ -55,7 +55,11 @@ def test_run_produces_events_and_closes(monkeypatch):
     simulator.iter_events.return_value = iter([_EVENT, _EVENT, _EVENT])
     producer = MagicMock()
 
-    monkeypatch.setattr(producer_cli, "ClickstreamSimulator", lambda seed: simulator)
+    monkeypatch.setattr(
+        producer_cli,
+        "ClickstreamSimulator",
+        lambda seed, **kwargs: simulator,
+    )
     monkeypatch.setattr(
         producer_cli,
         "ClickstreamProducer",
@@ -74,7 +78,11 @@ def test_run_stops_after_max_events(monkeypatch):
     simulator.iter_events.return_value = iter([_EVENT, _EVENT])
     producer = MagicMock()
 
-    monkeypatch.setattr(producer_cli, "ClickstreamSimulator", lambda seed: simulator)
+    monkeypatch.setattr(
+        producer_cli,
+        "ClickstreamSimulator",
+        lambda seed, **kwargs: simulator,
+    )
     monkeypatch.setattr(
         producer_cli,
         "ClickstreamProducer",

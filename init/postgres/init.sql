@@ -23,6 +23,11 @@ CREATE TABLE IF NOT EXISTS curated.campaign_stats_1m (
     PRIMARY KEY (window_start, campaign_id)
 );
 
+CREATE TABLE IF NOT EXISTS curated.page_views_1m_staging
+    (LIKE curated.page_views_1m INCLUDING DEFAULTS);
+CREATE TABLE IF NOT EXISTS curated.campaign_stats_1m_staging
+    (LIKE curated.campaign_stats_1m INCLUDING DEFAULTS);
+
 CREATE INDEX IF NOT EXISTS idx_page_views_1m_window_start
     ON curated.page_views_1m (window_start);
 CREATE INDEX IF NOT EXISTS idx_campaign_stats_1m_window_start
