@@ -52,6 +52,11 @@ curl -s "http://localhost:8000/api/v1/timeline?limit=5"         # 1-min windows 
 curl -s http://localhost:8000/api/v1/health/topics       # clicks.raw / clicks.dlq
 ```
 
+![API docs - Swagger UI](images/api-docs.png)
+
+*Swagger UI at http://localhost:8000/docs. During a demo, use **Try it out** on
+`/api/v1/summary` or `/api/v1/events/recent` to show live data.*
+
 ## 5. Data-flow verification (bottom-up)
 
 ```bash
@@ -88,6 +93,12 @@ If these counts grow over a few seconds, the whole pipeline is alive.
 Give `pipeline_freshness_seconds` ~1 minute after starting the stack (background
 collector refreshes every 15s + Prometheus scrapes every 15s).
 
+![Prometheus Alerts - all inactive when healthy](images/prometheus-alerts.png)
+
+*Alerts page at http://localhost:9090/alerts: `KafkaConsumerLagHigh`,
+`APIP95LatencyHigh` and `ClickstreamDLQNonEmpty` are all **inactive** on a
+healthy run (shown above).*
+
 ## 7. Grafana dashboard
 
 1. Sign in at http://localhost:3000 (`admin` / `admin`).
@@ -98,6 +109,12 @@ collector refreshes every 15s + Prometheus scrapes every 15s).
    - **Kafka Produce Rate (clicks.raw)** — should hover near 100 events/s.
    - **DLQ Depth** — 0 unless bad events were injected.
    - **API Request Rate / Latency p50 / p95** — tick up when you hit the API.
+
+![Grafana - Clickstream Pipeline overview](images/grafana-dashboard.png)
+
+*Dashboard at
+http://localhost:3000/d/clickstream-overview/clickstream-pipeline
+(click the dashboard title and set the time range to **Last 15 minutes**).*
 
 ## 8. Suggested 3–5 minute demo flow
 
@@ -123,3 +140,23 @@ collector refreshes every 15s + Prometheus scrapes every 15s).
 - **Reset all data**: `docker compose down -v && make up` (fresh Postgres/ClickHouse).
 - **Grafana dashboard not loaded**: wait up to 30s (provisioning provider refresh)
   or `docker compose restart grafana`.
+
+## 10. Reference values from a verified run (2026-09-01)
+
+Observed on a healthy local run (steady mode, producer running ~53 minutes; the
+screenshots above are from the same session). Re-measure on your own machine —
+these are reference values, not guarantees.
+
+| Metric | Observed value |
+|---|---|
+| Produce rate | ~100.0 events/s, 0 failed |
+| Total produced (run) | ~319k events in ~53 min |
+| End-to-end freshness | 0 s (latest 1-min window is the current minute) |
+| DLQ depth | 0 |
+| API latency p50/p95 - `/api/v1/summary` | 25.6 / 32.9 ms (client) · 21 / 46 ms (Prometheus) |
+| API latency p50/p95 - `/api/v1/events/recent` | 46.9 / 73.1 ms (client) · 42 / 90 ms (Prometheus) |
+| API latency p50/p95 - `/api/v1/top/pages` | 10.4 / 14.6 ms (client) · 8.5 / 22 ms (Prometheus) |
+
+Client numbers: 50 sequential requests per endpoint from the host. Prometheus
+numbers:
+`histogram_quantile(0.50/0.95, sum by (le, path) (rate(http_request_duration_seconds_bucket[2m])))`.
