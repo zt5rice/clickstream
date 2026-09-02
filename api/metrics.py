@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
+import psycopg
 from kafka import KafkaConsumer, TopicPartition
 from prometheus_client import Counter, Gauge, Histogram
 
@@ -33,6 +35,10 @@ kafka_topic_end_offset = Gauge(
     "kafka_topic_end_offset",
     "Kafka end offset per topic partition (DLQ depth when topic is unconsumed)",
     ("topic", "partition"),
+)
+pipeline_freshness_seconds = Gauge(
+    "pipeline_freshness_seconds",
+    "Seconds since the most recent curated 1-minute window was written (Spark sink freshness)",
 )
 
 
@@ -102,4 +108,24 @@ async def lag_collector_loop(
             refresh_lag_gauges(settings, topics)
         except Exception:
             logger.exception("failed to refresh Kafka lag gauges")
+        try:
+            refresh_freshness_gauge(settings)
+        except Exception:
+            logger.exception("failed to refresh pipeline freshness gauge")
         await asyncio.sleep(interval_seconds)
+
+
+def refresh_freshness_gauge(settings: Settings) -> None:
+    """Set pipeline freshness from the latest curated window in PostgreSQL."""
+    with psycopg.connect(settings.postgres_dsn()) as conn:
+        row = conn.execute(
+            "SELECT MAX(window_start) FROM curated.page_views_1m"
+        ).fetchone()
+    latest = row[0]
+    if latest is None:
+        pipeline_freshness_seconds.set(0)
+        return
+    # window_start is the window start; add one minute for the window end.
+    now = datetime.now(UTC).replace(tzinfo=None)
+    freshness = (now - (latest + timedelta(minutes=1))).total_seconds()
+    pipeline_freshness_seconds.set(max(0.0, freshness))

@@ -1,5 +1,6 @@
 """Unit tests for Prometheus metrics (middleware, /metrics, lag computation)."""
 
+from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 from fastapi.testclient import TestClient
@@ -12,6 +13,8 @@ from api.metrics import (
     fetch_lag,
     kafka_consumer_lag,
     kafka_topic_end_offset,
+    pipeline_freshness_seconds,
+    refresh_freshness_gauge,
     refresh_lag_gauges,
 )
 
@@ -86,3 +89,19 @@ def test_refresh_lag_gauges_sets_end_offsets():
         {"topic": "clicks.dlq", "partition": "0"},
     )
     assert value == 250
+
+
+def test_refresh_freshness_gauge_sets_seconds(monkeypatch):
+    pipeline_freshness_seconds.clear()
+    cursor = MagicMock()
+    cursor.fetchone.return_value = (datetime(2026, 8, 27, 15, 0),)
+    conn = MagicMock()
+    conn.execute.return_value = cursor
+
+    with patch("api.metrics.psycopg.connect") as connect:
+        connect.return_value.__enter__.return_value = conn
+        refresh_freshness_gauge(Settings())
+
+    value = REGISTRY.get_sample_value("pipeline_freshness_seconds", {})
+    assert value is not None
+    assert value >= 0
