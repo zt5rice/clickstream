@@ -1,4 +1,5 @@
-# PySpark pin matching the docker runtime image (apache/spark:3.5.7).
+# PySpark pin matching the docker runtime image
+# (apache/spark:3.5.7-scala2.12-java17-python3-ubuntu).
 # 3.5.7+ patches CVE-2025-54920 (Spark History UI command execution).
 # Not installed in the local venv: Spark runs in the compose container (P1-11),
 # and Spark-dependent tests are skipped when PySpark/Java are unavailable.

@@ -125,10 +125,16 @@ def test_query_timeline_maps_rows():
 
 
 def test_kafka_topics_maps_partitions():
-    admin = MagicMock()
-    admin.list_topics.return_value = {"clicks.raw": {0, 1, 2}, "clicks.dlq": {0, 1, 2}}
+    consumer = MagicMock()
+    consumer.topics.return_value = {"clicks.raw", "clicks.dlq"}
 
-    with patch("api.db._kafka_admin", return_value=admin):
+    with (
+        patch("api.db.KafkaConsumer", return_value=consumer),
+        patch(
+            "api.db._topic_partitions",
+            side_effect=lambda settings, topic: 3,
+        ),
+    ):
         result = db.kafka_topics(_SETTINGS)
 
     assert result == [

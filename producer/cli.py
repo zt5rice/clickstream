@@ -66,7 +66,10 @@ def run(config: ProducerConfig) -> None:
         config.duration_seconds,
         config.max_events,
     )
-    simulator = ClickstreamSimulator(seed=config.seed)
+    simulator = ClickstreamSimulator(
+        seed=config.seed,
+        events_per_second=config.rate,
+    )
     producer = ClickstreamProducer(
         config.bootstrap_servers,
         linger_ms=config.linger_ms,

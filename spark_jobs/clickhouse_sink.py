@@ -68,8 +68,8 @@ def client_params() -> dict[str, object]:
     return {
         "host": os.environ.get("CLICKHOUSE_HOST", "localhost"),
         "port": int(os.environ.get("CLICKHOUSE_PORT", "8123")),
-        "username": os.environ.get("CLICKHOUSE_USER", "default"),
-        "password": os.environ.get("CLICKHOUSE_PASSWORD", ""),
+        "username": os.environ.get("CLICKHOUSE_USER", "click"),
+        "password": os.environ.get("CLICKHOUSE_PASSWORD", "click"),
         "database": os.environ.get("CLICKHOUSE_DATABASE", "olap"),
     }
 
