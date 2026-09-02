@@ -17,3 +17,9 @@ make down    # teardown
 ## Next Steps
 
 Follow [DESIGN.md](DESIGN.md) Week 1 / Week 2 checklists. Run locally first, then kind, then EKS.
+
+## Live demo
+
+See [docs/demo-checklist.md](docs/demo-checklist.md) for a step-by-step checklist
+(URLs, health checks, PromQL queries, Grafana panels) to run a live demo of the
+local stack.
