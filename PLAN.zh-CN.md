@@ -1,6 +1,6 @@
 # Clickstream — 分阶段项目计划（中文版）
 
-状态：v0.1（规划中）· 最后更新：2026-08-27
+状态：v0.2（Phase 1 已完成）· 最后更新：2026-09-02
 
 本文档是 clickstream 作品集项目的可执行计划（中文版）。它与 `DESIGN.md`（架构 / 技术栈覆盖）以及
 `docs/` 下的文档（附加技术研究、协作与合规边界）互为补充。工作按阶段执行；每个阶段结束时应包含：
@@ -98,7 +98,7 @@ flowchart TB
 （Postgres 提供 curated 聚合，ClickHouse 提供原始事件/OLAP 查询）。DLQ 路径以第二条流式查询运行，
 因此会二次读取 topic——这是演示场景接受的取舍（在 DESIGN.md 中说明）。
 
-## 3. Phase 1 — 本地核心流水线（当前会话）
+## 3. Phase 1 — 本地核心流水线（已完成：2026-09-01）
 
 目标：`make up` 在本地启动全栈；生产者持续产生点击事件；Spark 聚合成 curated 表；API 提供只读查询；
 Grafana 展示 Kafka lag 与 API 延迟；`make test` 全绿；README + DESIGN.md 记录真实测量指标。
@@ -167,32 +167,32 @@ flowchart TB
 
 ### 3.6 验收标准
 
-- [ ] `make up` → 所有服务健康（无重启循环）
-- [ ] 生产者产生事件；Spark 完成聚合；数据在 Postgres + ClickHouse 可见
-- [ ] API 可查询；`/metrics` 暴露 Prometheus 指标
-- [ ] Grafana 面板显示 Kafka lag / API 延迟，且数据非空
-- [ ] `make lint` 与 `make test` 通过（集成测试在无 Docker 时自动跳过）
-- [ ] README + DESIGN.md 更新，包含真实测量指标（吞吐、新鲜度、API 延迟、Kafka lag）
+- [x] `make up` → 所有服务健康（无重启循环）
+- [x] 生产者产生事件；Spark 完成聚合；数据在 Postgres + ClickHouse 可见
+- [x] API 可查询；`/metrics` 暴露 Prometheus 指标
+- [x] Grafana 面板显示 Kafka lag / API 延迟，且数据非空
+- [x] `make lint` 与 `make test` 通过（集成测试在无 Docker 时自动跳过）
+- [x] README + DESIGN.md 更新，包含真实测量指标（吞吐、新鲜度、API 延迟、Kafka lag）
 
 ### 3.7 To-dos（Linear 追踪：Milestone M1，每个条目一张 ticket）
 
-- [ ] **P1-01** 搭建仓库结构与根工具（Makefile、.gitignore、pyproject.toml、requirements-dev.txt、.env.example）
-- [ ] **P1-02** producer：事件 schema + 确定性模拟器（页面/设备/区域/活动/用户/会话加权分布、seed）
-- [ ] **P1-03** producer：Kafka 客户端（批量、重试、幂等、压缩、吞吐日志、CLI）
-- [ ] **P1-04** Spark 作业：Kafka 消费 + JSON 解析 + watermark/窗口聚合
-- [ ] **P1-05** Spark 作业：PostgreSQL sink（curated 表，ON CONFLICT upsert）
-- [ ] **P1-06** Spark 作业：ClickHouse sink（ReplacingMergeTree，原始事件 + 窗口聚合）
-- [ ] **P1-07** Spark 作业：无法解析事件的 DLQ 路由
-- [ ] **P1-08** API：FastAPI 健康/就绪端点 + 只读查询端点
-- [ ] **P1-09** API：Prometheus 指标（延迟直方图、计数器、Kafka lag gauges）
-- [ ] **P1-10** 初始化脚本：Postgres schema、ClickHouse schema、Kafka topics
-- [ ] **P1-11** docker-compose.yml：全部服务锁定版本 + 健康检查 + depends_on 依赖链
-- [ ] **P1-12** 监控：Prometheus 抓取配置、Alertmanager 规则、Grafana 面板 provisioning
-- [ ] **P1-13** 测试：单元测试（序列化、simulator、config、API）
-- [ ] **P1-14** 测试：集成测试（Kafka、Postgres、全链路；基础设施不可用时自动跳过）
-- [ ] **P1-15** `make lint` + `make test` 全绿
-- [ ] **P1-16** 全栈启动 + 端到端验证（producer → Spark → PG/CH → API → Grafana）
-- [ ] **P1-17** 测量真实指标（吞吐、新鲜度、API 延迟、lag）并更新 README/DESIGN.md/CI
+- [x] **P1-01** 搭建仓库结构与根工具（Makefile、.gitignore、pyproject.toml、requirements-dev.txt、.env.example）
+- [x] **P1-02** producer：事件 schema + 确定性模拟器（页面/设备/区域/活动/用户/会话加权分布、seed）
+- [x] **P1-03** producer：Kafka 客户端（批量、重试、幂等、压缩、吞吐日志、CLI）
+- [x] **P1-04** Spark 作业：Kafka 消费 + JSON 解析 + watermark/窗口聚合
+- [x] **P1-05** Spark 作业：PostgreSQL sink（curated 表，ON CONFLICT upsert）
+- [x] **P1-06** Spark 作业：ClickHouse sink（ReplacingMergeTree，原始事件 + 窗口聚合）
+- [x] **P1-07** Spark 作业：无法解析事件的 DLQ 路由
+- [x] **P1-08** API：FastAPI 健康/就绪端点 + 只读查询端点
+- [x] **P1-09** API：Prometheus 指标（延迟直方图、计数器、Kafka lag gauges）
+- [x] **P1-10** 初始化脚本：Postgres schema、ClickHouse schema、Kafka topics
+- [x] **P1-11** docker-compose.yml：全部服务锁定版本 + 健康检查 + depends_on 依赖链
+- [x] **P1-12** 监控：Prometheus 抓取配置、Alertmanager 规则、Grafana 面板 provisioning
+- [x] **P1-13** 测试：单元测试（序列化、simulator、config、API）
+- [x] **P1-14** 测试：集成测试（Kafka、Postgres、全链路；基础设施不可用时自动跳过）
+- [x] **P1-15** `make lint` + `make test` 全绿
+- [x] **P1-16** 全栈启动 + 端到端验证（producer → Spark → PG/CH → API → Grafana）
+- [x] **P1-17** 测量真实指标（吞吐、新鲜度、API 延迟、lag）并更新 README/DESIGN.md/CI
 
 ---
 
