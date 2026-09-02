@@ -8,18 +8,18 @@
   "panels": [
     {
       "type": "timeseries",
-      "title": "Kafka Consumer Lag (by topic)",
+      "title": "Pipeline Freshness (s since latest window)",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "targets": [
         {
-          "expr": "sum by (topic) (kafka_consumergroup_lag)",
-          "legendFormat": "{{topic}}",
+          "expr": "pipeline_freshness_seconds",
+          "legendFormat": "freshness",
           "refId": "A"
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "short" },
+        "defaults": { "unit": "s" },
         "overrides": []
       }
     },
@@ -30,7 +30,7 @@
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
       "targets": [
         {
-          "expr": "sum(rate(kafka_broker_topic_messages_in{topic=\"clicks.raw\"}[1m]))",
+          "expr": "sum(rate(kafka_topic_partition_current_offset{topic=\"clicks.raw\"}[1m]))",
           "legendFormat": "events/s",
           "refId": "A"
         }

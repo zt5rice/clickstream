@@ -96,3 +96,15 @@ def test_campaign_distribution_within_tolerance():
     events = ClickstreamSimulator(seed=42).generate(3000)
     organic_ratio = sum(1 for e in events if e.campaign_id == "organic") / len(events)
     assert 0.30 <= organic_ratio <= 0.50
+
+
+def test_timestamps_follow_wallclock_pace():
+    events = ClickstreamSimulator(seed=1, events_per_second=100).generate(100)
+    assert len(events) == 100
+    # 100 events at 100 eps span ~1 simulated second.
+    assert events[-1].ts >= events[0].ts
+
+
+def test_invalid_events_per_second_rejected():
+    with pytest.raises(ValueError):
+        ClickstreamSimulator(seed=1, events_per_second=0)

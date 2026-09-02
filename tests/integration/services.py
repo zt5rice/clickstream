@@ -10,8 +10,8 @@ KAFKA_BOOTSTRAP_SERVERS = "localhost:9092"
 POSTGRES_DSN = "host=localhost port=5432 user=click password=click dbname=clickstream"
 CLICKHOUSE_HOST = "localhost"
 CLICKHOUSE_PORT = 8123
-CLICKHOUSE_USER = "default"
-CLICKHOUSE_PASSWORD = ""
+CLICKHOUSE_USER = "click"
+CLICKHOUSE_PASSWORD = "click"
 CLICKHOUSE_DATABASE = "olap"
 
 

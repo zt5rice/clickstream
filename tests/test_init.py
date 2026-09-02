@@ -17,6 +17,8 @@ def test_postgres_init_sql_matches_sink_schema():
     assert "CREATE SCHEMA IF NOT EXISTS curated" in sql
     assert "CREATE TABLE IF NOT EXISTS curated.page_views_1m" in sql
     assert "CREATE TABLE IF NOT EXISTS curated.campaign_stats_1m" in sql
+    assert "CREATE TABLE IF NOT EXISTS curated.page_views_1m_staging" in sql
+    assert "CREATE TABLE IF NOT EXISTS curated.campaign_stats_1m_staging" in sql
     assert "PRIMARY KEY (window_start, page, device)" in sql
     assert "PRIMARY KEY (window_start, campaign_id)" in sql
     assert "CREATE INDEX IF NOT EXISTS idx_page_views_1m_window_start" in sql
@@ -55,6 +57,12 @@ def test_verify_topics_returns_existing():
 
     existing = init_topics.verify_topics(admin, {"clicks.raw": 3, "clicks.dlq": 3})
     assert existing == ["clicks.raw"]
+
+
+def test_bootstrap_servers_default_reads_env(monkeypatch):
+    monkeypatch.setenv("KAFKA_BOOTSTRAP_SERVERS", "broker:29092")
+    args = init_topics.build_parser().parse_args([])
+    assert args.bootstrap_servers == "broker:29092"
 
 
 def test_main_reports_ok(capsys):

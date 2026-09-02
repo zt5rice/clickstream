@@ -6,7 +6,7 @@ from typing import Any
 
 import clickhouse_connect
 import psycopg
-from kafka import KafkaAdminClient
+from kafka import KafkaAdminClient, KafkaConsumer
 
 from .config import Settings
 
@@ -173,15 +173,32 @@ def query_timeline(settings: Settings, limit: int) -> list[dict[str, Any]]:
 
 def kafka_topics(settings: Settings) -> list[dict[str, Any]]:
     """List Kafka topics with their partition counts."""
-    admin = _kafka_admin(settings)
+    consumer = KafkaConsumer(
+        bootstrap_servers=settings.kafka_bootstrap_servers,
+        enable_auto_commit=False,
+    )
     try:
-        topics = admin.list_topics()
+        names = sorted(consumer.topics())
     finally:
-        admin.close()
-    return [
-        {"topic": name, "partitions": len(partitions)}
-        for name, partitions in sorted(topics.items())
-    ]
+        consumer.close()
+    result = []
+    for name in names:
+        # partitions_for_topic requires a live consumer; use a fresh consumer
+        # per lookup via the same connection semantics.
+        partitions = _topic_partitions(settings, name)
+        result.append({"topic": name, "partitions": partitions})
+    return result
+
+
+def _topic_partitions(settings: Settings, topic: str) -> int:
+    consumer = KafkaConsumer(
+        bootstrap_servers=settings.kafka_bootstrap_servers,
+        enable_auto_commit=False,
+    )
+    try:
+        return len(consumer.partitions_for_topic(topic) or set())
+    finally:
+        consumer.close()
 
 
 def _clickhouse_client(settings: Settings):

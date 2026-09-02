@@ -14,8 +14,6 @@ USER_POOL_SIZE = 5000
 PRODUCT_POOL_SIZE = 200
 SESSION_MIN_EVENTS = 3
 SESSION_MAX_EVENTS = 20
-EVENT_MIN_INTERVAL_SECONDS = 1
-EVENT_MAX_INTERVAL_SECONDS = 5
 
 PAGE_WEIGHTS = {
     "/home": 25,
@@ -63,11 +61,19 @@ class ClickstreamSimulator:
     tend to progress through the purchase funnel.
     """
 
-    def __init__(self, seed: int | None = None, start_time: datetime | None = None) -> None:
+    def __init__(
+        self,
+        seed: int | None = None,
+        start_time: datetime | None = None,
+        events_per_second: int = 100,
+    ) -> None:
+        if events_per_second <= 0:
+            raise ValueError("events_per_second must be > 0")
         self._seed = seed
         self._rng = random.Random(seed)
         self._clock = start_time or datetime.now(UTC).replace(microsecond=0)
         self._user_weights = [1.0 / rank for rank in range(1, USER_POOL_SIZE + 1)]
+        self._step_seconds = 1.0 / events_per_second
 
     @property
     def seed(self) -> int | None:
@@ -107,9 +113,9 @@ class ClickstreamSimulator:
                 referrer=referrer,
             )
             yield event
-            self._clock += timedelta(
-                seconds=self._rng.randint(EVENT_MIN_INTERVAL_SECONDS, EVENT_MAX_INTERVAL_SECONDS)
-            )
+            # Advance simulated time at the production pace so event timestamps
+            # stay close to wall-clock time (freshness/dashboards stay honest).
+            self._clock += timedelta(seconds=self._step_seconds)
             page = self._next_page(page)
 
     def _pick(self, weights: dict[str, float]) -> str:
