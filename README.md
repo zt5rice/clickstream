@@ -85,3 +85,16 @@ Layers:
 
 Connection comes from `dbt/profiles.yml` and can be overridden with
 `DBT_HOST` / `DBT_PORT` env vars.
+
+## Phase 2 add-ons — Delta Lake (P2-03)
+
+Local lakehouse demo with **Delta Lake** (no cloud account): reads a
+deterministic sample fixture, writes it to a Delta table, and upserts a daily
+summary with Delta `MERGE` (run twice to prove idempotency).
+
+```bash
+make delta-demo
+```
+
+See [docs/lakehouse-delta.md](docs/lakehouse-delta.md) for the Delta vs Iceberg
+decision and merge semantics.
