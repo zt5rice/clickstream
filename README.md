@@ -133,3 +133,16 @@ make go-ops-build   # build go_ops/bin/go_ops
 ```
 
 See [go_ops/README.md](go_ops/README.md) for usage.
+
+## Phase 2 add-ons — Ansible (P2-07)
+
+Provisioning playbooks in `ansible/`: a runnable local-demo playbook (checks
+Docker/colima and ensures local services are up) plus a reference playbook for
+preparing a Linux EKS bastion.
+
+```bash
+make ansible-check     # local playbook, --check mode
+make ansible-provision # ensure local services are running
+```
+
+See [ansible/README.md](ansible/README.md).
