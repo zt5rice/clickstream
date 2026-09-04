@@ -1,0 +1,25 @@
+# Data-quality checks for the curated Postgres layer (Soda Core).
+# Freshness thresholds are intentionally generous because this portfolio demo
+# does not keep the pipeline running 24/7; in production use minutes here.
+checks for page_views_1m:
+  - freshness(window_start) < 7d
+  - row_count > 0
+  - missing_count(window_start) = 0
+  - missing_count(page) = 0
+  - invalid_count(device) = 0:
+      valid values: [mobile, desktop, tablet]
+
+checks for campaign_stats_1m:
+  - row_count > 0
+  - missing_count(campaign_id) = 0
+  - invalid_count(campaign_id) = 0:
+      valid values:
+        - c-1
+        - c-2
+        - c-3
+        - c-4
+        - c-5
+        - c-6
+        - c-7
+        - c-8
+        - organic
