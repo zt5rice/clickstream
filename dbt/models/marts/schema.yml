@@ -1,0 +1,59 @@
+version: 2
+
+models:
+  - name: daily_page_summary
+    description: "Daily page/device traffic built from curated 1-minute windows."
+    columns:
+      - name: day
+        description: "UTC calendar day."
+        tests:
+          - not_null
+      - name: page
+        tests:
+          - not_null
+      - name: device
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["mobile", "desktop", "tablet"]
+      - name: views
+        tests:
+          - not_null
+      - name: window_count
+        tests:
+          - not_null
+
+  - name: daily_campaign_summary
+    description: "Daily campaign funnel summary from curated 1-minute windows."
+    columns:
+      - name: day
+        tests:
+          - not_null
+      - name: campaign_id
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - "c-1"
+                  - "c-2"
+                  - "c-3"
+                  - "c-4"
+                  - "c-5"
+                  - "c-6"
+                  - "c-7"
+                  - "c-8"
+                  - "organic"
+      - name: events
+        tests:
+          - not_null
+      - name: views
+        tests:
+          - not_null
+      - name: clicks
+        tests:
+          - not_null
+      - name: conversions
+        tests:
+          - not_null

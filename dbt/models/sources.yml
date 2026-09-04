@@ -1,0 +1,50 @@
+version: 2
+
+sources:
+  - name: curated
+    description: "Curated 1-minute aggregates written by the Spark pipeline (Phase 1)."
+    database: clickstream
+    schema: curated
+    tables:
+      - name: page_views_1m
+        description: "1-minute page views by page/device (idempotent upserts from Spark)."
+        freshness:
+          warn_after:
+            count: 15
+            period: minute
+          error_after:
+            count: 60
+            period: minute
+        loaded_at_field: window_start
+        columns:
+          - name: window_start
+            description: "Start of the 1-minute tumbling window (UTC)."
+          - name: page
+            description: "Page path (e.g. /product/42)."
+          - name: device
+            description: "mobile | desktop | tablet"
+          - name: views
+            description: "Count of page_view events in the window."
+          - name: users
+            description: "approx_count_distinct(user_id) for the window (approximate)."
+
+      - name: campaign_stats_1m
+        description: "1-minute campaign funnel stats from Spark."
+        freshness:
+          warn_after:
+            count: 15
+            period: minute
+          error_after:
+            count: 60
+            period: minute
+        loaded_at_field: window_start
+        columns:
+          - name: window_start
+          - name: campaign_id
+            description: "c-1..c-8 or organic."
+          - name: events
+          - name: views
+          - name: clicks
+          - name: conversions
+          - name: users
+            description: "approx_count_distinct(user_id) for the window (approximate)."
