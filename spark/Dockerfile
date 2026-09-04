@@ -8,6 +8,7 @@ RUN pip install --no-cache-dir \
     clickhouse-connect==1.7.2
 
 COPY spark_jobs /opt/clickstream/spark_jobs
+COPY sample_data /opt/clickstream/sample_data
 ENV PYTHONPATH=/opt/clickstream
 # The spark user's default HOME (/nonexistent) is not writable, which breaks
 # spark-submit --packages (ivy cache). Point HOME at /tmp instead.
