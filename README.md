@@ -45,3 +45,22 @@ quality, Redis caching/rate limiting, `go_ops`, Ansible, `ai_assistant`) — see
 See [docs/demo-checklist.md](docs/demo-checklist.md) for a step-by-step checklist
 (URLs, health checks, PromQL queries, Grafana panels) to run a live demo of the
 local stack.
+
+## Phase 2 add-ons — Airflow (P2-01)
+
+Batch orchestration with Apache Airflow (`LocalExecutor`, pinned image + DAGs in
+`etl/dags/`). Requires the Postgres service (the metadata DB is `airflow` on the
+same Postgres container).
+
+```bash
+docker compose up -d airflow-db-init airflow-init airflow-scheduler airflow-webserver
+open http://localhost:8082   # Airflow UI (admin / admin)
+```
+
+DAGs:
+
+- `clickstream_freshness_check` — every 15 min; fails the run when the latest
+  curated 1-minute window is older than `FRESHNESS_MAX_STALE_SECONDS` (default
+  180s), i.e. an alert when the pipeline falls behind.
+- `clickstream_daily_rollup` — daily, idempotent rollup of `page_views_1m` into
+  `curated.daily_summary` (`ON CONFLICT` upsert).
