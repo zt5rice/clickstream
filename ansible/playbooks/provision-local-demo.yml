@@ -1,0 +1,40 @@
+---
+# Provision the clickstream local demo environment (P2-07).
+# Targets localhost (connection: local) on the developer machine: verifies the
+# Docker/colima runtime and ensures the core local services are running.
+# Safe to run with --check.
+- name: Provision clickstream local demo environment
+  hosts: localhost
+  gather_facts: false
+  vars:
+    compose_dir: "{{ playbook_dir | dirname | dirname }}"
+  tasks:
+    - name: Verify Docker is installed
+      ansible.builtin.command: docker --version
+      register: docker_version
+      changed_when: false
+
+    - name: Verify colima runtime status
+      ansible.builtin.command: colima status
+      register: colima_status
+      changed_when: false
+      ignore_errors: true
+
+    - name: Ensure core local services are running
+      ansible.builtin.command:
+        cmd: docker compose up -d postgres clickhouse redis kafka kafka-init api
+        chdir: "{{ compose_dir }}"
+      register: services_up
+
+    - name: Write provisioning report
+      ansible.builtin.copy:
+        content: |
+          docker: {{ docker_version.stdout | default('n/a') }}
+          colima: {{ colima_status.stdout | default('not running', true) }}
+          services: postgres clickhouse redis kafka kafka-init api
+        dest: /tmp/clickstream-ansible-provision.txt
+        mode: "0644"
+
+    - name: Show provisioning result
+      ansible.builtin.debug:
+        msg: "Local demo services ensured (see /tmp/clickstream-ansible-provision.txt)."
