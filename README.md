@@ -98,3 +98,15 @@ make delta-demo
 
 See [docs/lakehouse-delta.md](docs/lakehouse-delta.md) for the Delta vs Iceberg
 decision and merge semantics.
+
+## Phase 2 add-ons — data quality (P2-04)
+
+Soda Core checks on the curated Postgres schema plus native ClickHouse checks;
+results are merged into JSON + HTML reports.
+
+```bash
+make quality-run
+open quality/target/quality-report.html
+```
+
+See [docs/data-quality-soda.md](docs/data-quality-soda.md) for details.

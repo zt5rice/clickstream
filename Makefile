@@ -1,5 +1,5 @@
 # clickstream - local development tooling
-.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test delta-demo check kind-up kind-down eks-apply eks-destroy
+.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test delta-demo quality-run check kind-up kind-down eks-apply eks-destroy
 
 # Prefer the pinned tools inside .venv when present (after `make init`).
 RUFF ?= $(if $(wildcard .venv/bin/ruff),.venv/bin/ruff,ruff)
@@ -32,11 +32,11 @@ test-ci: ## Run the fast test set (excludes slow-marked tests) for CI
 	$(PYTEST) tests/ -m "not slow and not integration" -v
 
 lint:
-	$(RUFF) check producer spark_jobs etl api tests
+	$(RUFF) check producer spark_jobs etl api quality tests
 
 fmt:
-	$(RUFF) format producer spark_jobs etl api tests
-	$(RUFF) check --fix producer spark_jobs etl api tests
+	$(RUFF) format producer spark_jobs etl api quality tests
+	$(RUFF) check --fix producer spark_jobs etl api quality tests
 
 dbt-run: ## Run dbt models against the local curated Postgres
 	.venv/bin/dbt run --project-dir dbt --profiles-dir dbt
@@ -53,9 +53,12 @@ delta-demo: ## Run the local Delta Lake demo (needs spark-master/spark-worker up
 		--conf spark.jars.ivy=/tmp/.ivy2 \
 		/opt/clickstream/spark_jobs/delta_lakehouse.py all
 
+quality-run: ## Run Soda (Postgres) + native ClickHouse checks and write reports
+	.venv/bin/python quality/run_quality.py
+
 check: ## Lint, format-check, and run the test suite
-	$(RUFF) format --check producer spark_jobs etl api tests
-	$(RUFF) check producer spark_jobs etl api tests
+	$(RUFF) format --check producer spark_jobs etl api quality tests
+	$(RUFF) check producer spark_jobs etl api quality tests
 	$(PYTEST) tests/ -v
 
 kind-up:
