@@ -118,9 +118,7 @@ async def lag_collector_loop(
 def refresh_freshness_gauge(settings: Settings) -> None:
     """Set pipeline freshness from the latest curated window in PostgreSQL."""
     with psycopg.connect(settings.postgres_dsn()) as conn:
-        row = conn.execute(
-            "SELECT MAX(window_start) FROM curated.page_views_1m"
-        ).fetchone()
+        row = conn.execute("SELECT MAX(window_start) FROM curated.page_views_1m").fetchone()
     latest = row[0]
     if latest is None:
         pipeline_freshness_seconds.set(0)
