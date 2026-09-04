@@ -1,0 +1,41 @@
+---
+# Prepare a Linux EKS bastion/demo node (P2-07).
+# This playbook targets the `eks_bastion` group, which is intentionally NOT in
+# the local inventory, so it cannot run against localhost by accident. It is a
+# reference for provisioning a Linux bastion (Debian/RedHat families) and
+# should be run against real hosts with an ssh inventory.
+- name: Prepare EKS bastion / demo node tooling
+  hosts: eks_bastion
+  become: true
+  vars:
+    bastion_packages:
+      Debian:
+        - docker.io
+        - awscli
+        - unzip
+      RedHat:
+        - docker
+        - awscli2
+        - unzip
+  tasks:
+    - name: Fail on unsupported OS families
+      ansible.builtin.assert:
+        that:
+          - ansible_os_family in bastion_packages
+        fail_msg: "Unsupported OS family {{ ansible_os_family }}"
+
+    - name: Install baseline bastion tooling
+      ansible.builtin.package:
+        name: "{{ bastion_packages[ansible_os_family] }}"
+        state: present
+
+    - name: Download kubectl and terraform into /usr/local/bin
+      ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "/usr/local/bin/{{ item.name }}"
+        mode: "0755"
+      loop:
+        - name: kubectl
+          url: https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl
+        - name: terraform
+          url: https://releases.hashicorp.com/terraform/1.9.8/terraform_1.9.8_linux_amd64.zip
