@@ -27,6 +27,13 @@ class Settings(BaseSettings):
     kafka_lag_refresh_seconds: int = 15
     kafka_lag_topics: str = "clicks.raw,clicks.dlq"
 
+    redis_host: str = "localhost"
+    redis_port: int = 6379
+    redis_db: int = 0
+    cache_ttl_seconds: int = 10
+    rate_limit_max_requests: int = 60
+    rate_limit_window_seconds: int = 60
+
     def postgres_dsn(self) -> str:
         return (
             f"host={self.postgres_host} port={self.postgres_port} "

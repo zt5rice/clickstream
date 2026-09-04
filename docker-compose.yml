@@ -207,6 +207,11 @@ services:
       KAFKA_CONSUMER_GROUP: clickstream-spark
       KAFKA_LAG_REFRESH_SECONDS: "15"
       KAFKA_LAG_TOPICS: clicks.raw,clicks.dlq
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      CACHE_TTL_SECONDS: "10"
+      RATE_LIMIT_MAX_REQUESTS: "60"
+      RATE_LIMIT_WINDOW_SECONDS: "60"
     depends_on:
       postgres:
         condition: service_healthy

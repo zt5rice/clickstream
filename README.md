@@ -110,3 +110,13 @@ open quality/target/quality-report.html
 ```
 
 See [docs/data-quality-soda.md](docs/data-quality-soda.md) for details.
+
+## Phase 2 add-ons — Redis cache + rate limiting (P2-05)
+
+- **Cache**: hot read endpoints (`/api/v1/summary`, `/api/v1/top/*`) are cached
+  in Redis for `CACHE_TTL_SECONDS` (default 10s).
+- **Rate limit**: read endpoints are limited per client IP to
+  `RATE_LIMIT_MAX_REQUESTS` per `RATE_LIMIT_WINDOW_SECONDS` (default 60/60s);
+  breaches return `429` with a `Retry-After` header.
+- Redis is optional at runtime: if it is unreachable the cache degrades to a
+  no-op and the limiter fails open, so the read-only API keeps working.
