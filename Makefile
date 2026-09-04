@@ -1,5 +1,5 @@
 # clickstream - local development tooling
-.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test check kind-up kind-down eks-apply eks-destroy
+.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test delta-demo check kind-up kind-down eks-apply eks-destroy
 
 # Prefer the pinned tools inside .venv when present (after `make init`).
 RUFF ?= $(if $(wildcard .venv/bin/ruff),.venv/bin/ruff,ruff)
@@ -43,6 +43,15 @@ dbt-run: ## Run dbt models against the local curated Postgres
 
 dbt-test: ## Run dbt tests against the local curated Postgres
 	.venv/bin/dbt test --project-dir dbt --profiles-dir dbt
+
+delta-demo: ## Run the local Delta Lake demo (needs spark-master/spark-worker up)
+	docker compose up -d spark-master spark-worker
+	docker compose run --rm --no-deps spark-submit \
+		/opt/spark/bin/spark-submit \
+		--master spark://spark-master:7077 \
+		--packages io.delta:delta-spark_2.12:3.2.1 \
+		--conf spark.jars.ivy=/tmp/.ivy2 \
+		/opt/clickstream/spark_jobs/delta_lakehouse.py all
 
 check: ## Lint, format-check, and run the test suite
 	$(RUFF) format --check producer spark_jobs etl api tests

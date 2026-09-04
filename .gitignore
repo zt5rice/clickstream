@@ -34,6 +34,9 @@ dbt/target/
 dbt/packages/
 dbt/logs/
 
+# Local Delta Lake demo data (P2-03)
+.delta-local/
+
 # IDE / OS
 .DS_Store
 .idea/
