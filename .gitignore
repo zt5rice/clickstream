@@ -40,6 +40,9 @@ dbt/logs/
 # Data quality reports (P2-04)
 quality/target/
 
+# go_ops build output (P2-06)
+go_ops/bin/
+
 # IDE / OS
 .DS_Store
 .idea/
