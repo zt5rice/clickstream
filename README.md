@@ -120,3 +120,16 @@ See [docs/data-quality-soda.md](docs/data-quality-soda.md) for details.
   breaches return `429` with a `Retry-After` header.
 - Redis is optional at runtime: if it is unreachable the cache degrades to a
   no-op and the limiter fails open, so the read-only API keeps working.
+
+## Phase 2 add-ons — go_ops CLI (P2-06)
+
+Read-only Go control-plane CLI for the API (`health`, `topics`, `freshness`,
+`status`), pure Go standard library. Built/tested in a pinned `golang` Docker
+image so no local Go toolchain is needed.
+
+```bash
+make go-ops-test    # unit tests in golang:1.24.3-alpine
+make go-ops-build   # build go_ops/bin/go_ops
+```
+
+See [go_ops/README.md](go_ops/README.md) for usage.
