@@ -85,6 +85,8 @@ services:
     depends_on:
       spark-master:
         condition: service_healthy
+    volumes:
+      - ./.delta-local:/opt/clickstream/delta-local
 
   spark-submit:
     build:
@@ -106,6 +108,10 @@ services:
       CLICKHOUSE_USER: click
       CLICKHOUSE_PASSWORD: click
       CLICKHOUSE_DATABASE: olap
+      SAMPLE_PATH: /opt/clickstream/sample_data/clicks.sample.json
+      DELTA_BASE_PATH: /opt/clickstream/delta-local
+    volumes:
+      - ./.delta-local:/opt/clickstream/delta-local
     command:
       - /opt/spark/bin/spark-submit
       - --master
