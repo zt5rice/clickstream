@@ -10,3 +10,4 @@ dbt-postgres==1.10.2
 soda-core==3.5.6
 soda-core-postgres==3.5.6
 fakeredis==2.37.1
+ansible-core==2.19.12
