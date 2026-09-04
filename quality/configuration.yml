@@ -1,0 +1,11 @@
+# Soda Core configuration for the clickstream local demo (P2-04).
+# Demo-only credentials (click/click) match the docker-compose services; the
+# Postgres host port is 5433 so a local Postgres on 5432 does not clash.
+data_source postgres_curated:
+  type: postgres
+  host: localhost
+  port: 5433
+  username: click
+  password: click
+  database: clickstream
+  schema: curated
