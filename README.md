@@ -64,3 +64,24 @@ DAGs:
   180s), i.e. an alert when the pipeline falls behind.
 - `clickstream_daily_rollup` — daily, idempotent rollup of `page_views_1m` into
   `curated.daily_summary` (`ON CONFLICT` upsert).
+
+## Phase 2 add-ons — dbt (P2-02)
+
+dbt models + tests on the curated Postgres schema (project in `dbt/`). Requires
+the Postgres service; the host port is **5433** so a local Postgres on 5432 does
+not clash with the Docker one.
+
+```bash
+make dbt-run    # build staging views + daily marts
+make dbt-test   # run 15 data tests (not_null / accepted_values / uniqueness)
+```
+
+Layers:
+
+- `staging` — thin views over the `curated` source tables
+  (`page_views_1m`, `campaign_stats_1m`).
+- `marts` — daily rollups `daily_page_summary` (exact views, no double-counted
+  approx users) and `daily_campaign_summary`.
+
+Connection comes from `dbt/profiles.yml` and can be overridden with
+`DBT_HOST` / `DBT_PORT` env vars.

@@ -1,0 +1,23 @@
+name: clickstream
+version: 1.0.0
+config-version: 2
+
+profile: clickstream
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+seed-paths: ["seeds"]
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+  - "logs"
+
+models:
+  clickstream:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table
