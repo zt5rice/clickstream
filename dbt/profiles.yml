@@ -1,0 +1,12 @@
+clickstream:
+  outputs:
+    local:
+      type: postgres
+      host: "{{ env_var('DBT_HOST', 'localhost') }}"
+      port: "{{ env_var('DBT_PORT', '5433') | int }}"
+      user: click
+      password: click
+      dbname: clickstream
+      schema: curated
+      threads: 2
+  target: local
