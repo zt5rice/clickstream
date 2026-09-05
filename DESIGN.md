@@ -1,6 +1,6 @@
 # Real-Time Clickstream Streaming Pipeline — Design Document
 
-Status: v0.2 (Phase 1 local core pipeline complete) · Target: Data Engineer roles (e.g., Sony SIE Data Engineer II, Job ID R-125071)
+Status: v0.3 (Phase 1 + Phase 2 complete) · Target: Data Engineer roles (e.g., Sony SIE Data Engineer II, Job ID R-125071)
 
 ## 1. Goal
 
@@ -188,3 +188,25 @@ end-to-end locally. Real measured values from a ~53-minute steady run
 Measured 2026-09-02 06:54 UTC (= 2026-09-01 23:54 PDT). These are honest
 reference points from our own run — re-measure on your machine before quoting
 them (see `docs/demo-checklist.md` for reproduction steps).
+
+## 13. As-Built — Phase 2 Add-ons
+
+Phase 2 (Linear M2) adds data-engineering depth on top of the Phase 1 core.
+Every add-on runs locally and was verified on 2026-09-04:
+
+| Ticket | Add-on | Where | Verified result |
+|---|---|---|---|
+| P2-01 | Airflow DAGs | `etl/dags/` | webserver+scheduler up; freshness check + daily rollup DAG run |
+| P2-02 | dbt models/tests | `dbt/` | 4 models built; 15 data tests pass |
+| P2-03 | Delta Lake (local) | `spark_jobs/delta_lakehouse.py` | 60 events written; MERGE idempotent |
+| P2-04 | Data quality (Soda + native CH) | `quality/` | 11 checks pass; JSON+HTML reports |
+| P2-05 | Redis cache + rate limit | `api/` | cache keys written; 429 after limit |
+| P2-06 | go_ops CLI | `go_ops/` | unit tests pass; live `topics`/`status` |
+| P2-07 | Ansible playbooks | `ansible/` | local provision playbook run (ok) |
+| P2-08 | ai_assistant | `ai_assistant/` | explain-alert / generate-sql / anomalies endpoints live |
+
+Architecture note: these add-ons sit beside the Phase 1 core rather than
+replacing it — Airflow/dbt work on the curated Postgres layer, Delta adds a
+local lakehouse write path from Spark, Soda/quality validate both warehouses,
+Redis hardens the API, `go_ops` is an ops CLI, Ansible prepares deployment
+nodes, and `ai_assistant` is an LLM-powered ops layer (mock by default).
