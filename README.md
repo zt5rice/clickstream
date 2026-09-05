@@ -146,3 +146,18 @@ make ansible-provision # ensure local services are running
 ```
 
 See [ansible/README.md](ansible/README.md).
+
+## Phase 2 add-ons — ai_assistant (P2-08)
+
+FastAPI assistant that explains alerts, generates **read-only** SQL against an
+allowlisted table set, and runs z-score anomaly detection on Prometheus
+metrics. Default LLM provider is **mock** (no API key, public-repo safe); an
+OpenAI-compatible provider can be enabled via env vars.
+
+```bash
+make ai-assistant-up
+curl -s http://localhost:8090/health
+```
+
+See [docs/ai-assistant.md](docs/ai-assistant.md) and
+[ai_assistant/README.md](ai_assistant/README.md).
