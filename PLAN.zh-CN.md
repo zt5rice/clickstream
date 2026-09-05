@@ -1,6 +1,6 @@
 # Clickstream — 分阶段项目计划（中文版）
 
-状态：v0.2（Phase 1 已完成）· 最后更新：2026-09-02
+状态：v0.3（Phase 2 已完成）· 最后更新：2026-09-04
 
 本文档是 clickstream 作品集项目的可执行计划（中文版）。它与 `DESIGN.md`（架构 / 技术栈覆盖）以及
 `docs/` 下的文档（附加技术研究、协作与合规边界）互为补充。工作按阶段执行；每个阶段结束时应包含：
@@ -196,7 +196,7 @@ flowchart TB
 
 ---
 
-## 4. Phase 2 — 数据工程深度（v1 附加）
+## 4. Phase 2 — 数据工程深度（已完成：2026-09-04）
 
 每项新增技术必须真正在本地运行，并在 README + DESIGN.md 中说明。
 
@@ -213,15 +213,15 @@ flowchart TB
 
 ### 4.1 To-dos（Linear 追踪：Milestone M2，每个条目一张 ticket）
 
-- [ ] **P2-01** Airflow DAGs：批处理编排 / ETL 调度
-- [ ] **P2-02** dbt：在 curated Postgres 表上做 SQL 模型 + 测试
-- [ ] **P2-03** 湖仓：从 Spark 写 Delta Lake / Iceberg（本地或 S3）
-- [ ] **P2-04** 数据质量：Great Expectations 或 Soda 校验套件 + 报告
-- [ ] **P2-05** API：Redis 缓存 + 限流
-- [ ] **P2-06** go_ops：Go CLI / 控制面（健康检查、topic 状态、lag）
-- [ ] **P2-07** Ansible：配置 Playbook（演示节点 / EKS 堡垒机）
-- [ ] **P2-08** ai_assistant：LLM 流水线运维助手 + 对 lag/延迟做异常检测
-- [ ] **P2-09** 逐项本地验证；更新 README + DESIGN.md；lint + test 全绿
+- [x] **P2-01** Airflow DAGs：批处理编排 / ETL 调度
+- [x] **P2-02** dbt：在 curated Postgres 表上做 SQL 模型 + 测试
+- [x] **P2-03** 湖仓：从 Spark 写 Delta Lake / Iceberg（本地或 S3）
+- [x] **P2-04** 数据质量：Great Expectations 或 Soda 校验套件 + 报告
+- [x] **P2-05** API：Redis 缓存 + 限流
+- [x] **P2-06** go_ops：Go CLI / 控制面（健康检查、topic 状态、lag）
+- [x] **P2-07** Ansible：配置 Playbook（演示节点 / EKS 堡垒机）
+- [x] **P2-08** ai_assistant：LLM 流水线运维助手 + 对 lag/延迟做异常检测
+- [x] **P2-09** 逐项本地验证；更新 README + DESIGN.md；lint + test 全绿
 
 ## 5. Phase 3 — 部署与平台（kind → EKS）
 
@@ -356,7 +356,6 @@ flowchart TB
 
 ## 12. NEXT SESSION（推迟项，绝不做一半）
 
-- Phase 2：Airflow、dbt、Delta/Iceberg、数据质量、Redis 缓存/限流、`go_ops/`、`ansible/`、`ai_assistant/`。
 - Phase 3：kind、Terraform EKS、Helm、cert-manager、GitHub Actions 部署、Lambda。
 - Phase 4：SLO/SLI、runbook、PIR、k6/Locust、混沌演练、Kong/Istio/Flink/GitOps。
 - Phase 5：LICENSE（MIT）、架构图、面试要点、演示脚本。

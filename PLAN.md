@@ -1,6 +1,6 @@
 # Clickstream — Phased Project Plan
 
-Status: v0.2 (Phase 1 complete) · Last updated: 2026-09-02
+Status: v0.3 (Phase 2 complete) · Last updated: 2026-09-04
 
 This document is the living execution plan for the clickstream portfolio project.
 It complements `DESIGN.md` (architecture / tech-stack coverage) and the docs in
@@ -213,7 +213,7 @@ tests and quick demos; the live pipeline uses the simulator.
 
 ---
 
-## 4. Phase 2 — Data-Engineering Depth (v1 add-ons)
+## 4. Phase 2 — Data-Engineering Depth (complete: 2026-09-04)
 
 Each addition must actually run locally and be documented in README + DESIGN.md.
 
@@ -230,15 +230,15 @@ Each addition must actually run locally and be documented in README + DESIGN.md.
 
 ### 4.1 To-dos (tracked in Linear: Milestone M2, one ticket per item)
 
-- [ ] **P2-01** Airflow DAGs: batch orchestration / ETL scheduling
-- [ ] **P2-02** dbt: SQL models + tests on curated Postgres tables
-- [ ] **P2-03** Lakehouse: Delta Lake / Iceberg writes from Spark (local or S3)
-- [ ] **P2-04** Data quality: Great Expectations or Soda suites + reports
-- [ ] **P2-05** API: Redis caching + rate limiting
-- [ ] **P2-06** go_ops: Go CLI / control-plane (health, topic status, lag)
-- [ ] **P2-07** Ansible: provisioning playbooks (demo nodes / EKS bastion)
-- [ ] **P2-08** ai_assistant: LLM pipeline-ops assistant + anomaly detection on lag/latency
-- [ ] **P2-09** Verify each add-on locally; update README + DESIGN.md; lint + test green
+- [x] **P2-01** Airflow DAGs: batch orchestration / ETL scheduling
+- [x] **P2-02** dbt: SQL models + tests on curated Postgres tables
+- [x] **P2-03** Lakehouse: Delta Lake / Iceberg writes from Spark (local or S3)
+- [x] **P2-04** Data quality: Great Expectations or Soda suites + reports
+- [x] **P2-05** API: Redis caching + rate limiting
+- [x] **P2-06** go_ops: Go CLI / control-plane (health, topic status, lag)
+- [x] **P2-07** Ansible: provisioning playbooks (demo nodes / EKS bastion)
+- [x] **P2-08** ai_assistant: LLM pipeline-ops assistant + anomaly detection on lag/latency
+- [x] **P2-09** Verify each add-on locally; update README + DESIGN.md; lint + test green
 
 ## 5. Phase 3 — Deployment & Platform (kind → EKS)
 
@@ -383,8 +383,6 @@ environment, and configuration used. No numbers are claimed without a measured r
 
 ## 12. NEXT SESSION (deferred, never half-added)
 
-- Phase 2: Airflow, dbt, Delta/Iceberg, data quality, Redis caching/rate limit,
-  `go_ops/`, `ansible/`, `ai_assistant/`.
 - Phase 3: kind, Terraform EKS, Helm, cert-manager, GitHub Actions deploy, Lambda.
 - Phase 4: SLO/SLI, runbooks, PIR, k6/Locust, chaos drills, Kong/Istio/Flink/GitOps.
 - Phase 5: LICENSE (MIT), architecture diagram, interview talking points, demo script.
