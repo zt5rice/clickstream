@@ -35,10 +35,10 @@ Measured 2026-09-02 06:54 UTC (= 2026-09-01 23:54 PDT).
 
 ## Next Steps
 
-Phase 1 (local core pipeline) is complete and verified end-to-end. Next up:
-**Phase 2 — data-engineering depth** (Airflow, dbt, Delta Lake/Iceberg, data
-quality, Redis caching/rate limiting, `go_ops`, Ansible, `ai_assistant`) — see
-[PLAN.md](PLAN.md) §4 for the tracked milestones/tickets.
+Phase 1 (local core pipeline) and Phase 2 (data-engineering add-ons) are
+complete and verified locally. Next up: **Phase 3 — deployment & platform**
+(kind → Terraform EKS, Helm, cert-manager, CI/CD deploy) — see
+[PLAN.md](PLAN.md) §5 for the tracked milestones/tickets.
 
 ## Live demo
 
