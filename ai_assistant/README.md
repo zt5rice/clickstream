@@ -1,23 +1,21 @@
-# ai_assistant — LLM Pipeline-Ops Assistant
+# ai_assistant — LLM pipeline-ops assistant + anomaly detection (P2-08)
 
-Status: scaffold (TODO) · Purpose: hit the "AI-powered capabilities" line in data-platform JDs
-(e.g., Sony Staff Software Engineer – Data, ) while reusing the existing NL2SQL / internal tool / MCP experience.
+Read-only FastAPI service:
 
-## Planned capabilities
+- `POST /assistant/explain-alert` — explain an alert (mock by default).
+- `POST /assistant/generate-sql` — generate read-only SQL against an
+  **allowlisted** table set (mock returns a safe `SELECT`).
+- `GET /assistant/anomalies?metric=pipeline_freshness_seconds` — z-score anomaly
+  detection over the last N hours of a Prometheus series.
 
-- Explain a Kafka-lag / DLQ / latency alert in plain language (given Prometheus metrics)
-- Generate read-only SQL against curated Postgres / ClickHouse tables from a natural-language question
-- Recommend a runbook step or RCA outline for a given incident type
+Default provider is `mock` (no API key, public-repo safe). Set
+`AI_LLM_PROVIDER=openai-compatible` + `AI_LLM_API_KEY` to use any
+OpenAI-compatible `/chat/completions` endpoint; it falls back to mock when the
+key is missing.
 
-## Suggested stack
-
-- Python + FastAPI (port 8001), LangChain or direct LLM API, read-only SQL guard
-- Optional: MCP tool integration to query Grafana / ClickHouse / Postgres
-- Follow the defense-in-depth + SSE streaming patterns already proven in NL2SQLAgent
-
-## TODO
-
-- [ ] Define API endpoints (health, explain-alert, nl2sql)
-- [ ] Read-only SQL guard + schema-aware prompting
-- [ ] Tests (pytest) + integration with local Postgres/ClickHouse
-- [ ] Prometheus metrics + basic auth
+```bash
+docker compose up -d ai-assistant
+curl http://localhost:8090/assistant/generate-sql \
+  -H 'content-type: application/json' \
+  -d '{"table":"curated.daily_page_summary","question":"daily views by page"}'
+```

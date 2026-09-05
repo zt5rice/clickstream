@@ -1,5 +1,5 @@
 # clickstream - local development tooling
-.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test delta-demo quality-run go-ops-test go-ops-build ansible-check ansible-provision check kind-up kind-down eks-apply eks-destroy
+.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test delta-demo quality-run go-ops-test go-ops-build ansible-check ansible-provision ai-assistant-up check kind-up kind-down eks-apply eks-destroy
 
 # Prefer the pinned tools inside .venv when present (after `make init`).
 RUFF ?= $(if $(wildcard .venv/bin/ruff),.venv/bin/ruff,ruff)
@@ -69,6 +69,9 @@ ansible-check: ## Run the local-demo Ansible playbook in --check mode
 
 ansible-provision: ## Run the local-demo Ansible playbook (starts local services)
 	.venv/bin/ansible-playbook -i ansible/inventory.yml ansible/playbooks/provision-local-demo.yml
+
+ai-assistant-up: ## Start the AI assistant service (mock LLM by default)
+	docker compose up -d ai-assistant
 
 check: ## Lint, format-check, and run the test suite
 	$(RUFF) format --check producer spark_jobs etl api quality tests
