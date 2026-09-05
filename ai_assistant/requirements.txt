@@ -1,0 +1,5 @@
+# Pinned runtime dependencies for the AI assistant service (P2-08).
+fastapi==0.141.1
+uvicorn==0.52.4
+pydantic-settings==2.15.0
+httpx==0.28.1
