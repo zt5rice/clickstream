@@ -181,3 +181,21 @@ Verified on 2026-09-06: all core pods `Running/Ready`, API `/ready` returns
 postgres/clickhouse/kafka all `true`, and the Spark Job completes with an
 idempotent Delta write (60 events). Notes and fixes that came out of the kind
 bring-up are documented in `docs/kind-bring-up.md`.
+
+## Phase 3 add-ons — Helm + cert-manager (P3-03)
+
+The same core subset is packaged as a values-driven Helm chart at
+`k8s/helm/clickstream` (PostgreSQL, ClickHouse, Redis, Kafka KRaft, API,
+`kafka-init` Job, optional self-signed ClusterIssuer).
+
+```bash
+make helm-lint                 # helm lint
+make helm-install-cert-manager # install cert-manager v1.16.3
+make helm-up                   # helm upgrade --install into namespace clickstream
+kubectl -n clickstream get pods
+```
+
+Verified on 2026-09-06 on kind: release `deployed`, all core pods
+`Running/Ready`, `kafka-init` Job `Completed` (topics auto-created), API
+`/ready` = all checks `true`, and ClusterIssuer `clickstream-selfsigned`
+`Ready=True`.

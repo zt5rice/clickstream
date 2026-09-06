@@ -1,0 +1,6 @@
+apiVersion: v2
+name: clickstream
+description: "Clickstream core pipeline: PostgreSQL, ClickHouse, Redis, Kafka (KRaft), API (P3-03)"
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
