@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import time
 from contextlib import asynccontextmanager, suppress
 from typing import Any
@@ -21,18 +22,23 @@ from .metrics import (
 from .ratelimit import rate_limit
 
 settings = Settings()
+log = logging.getLogger("api.main")
+
+
+async def _run_lag_collector() -> None:
+    """Run the lag collector and keep the API alive if Kafka is starting."""
+    topics = tuple(topic.strip() for topic in settings.kafka_lag_topics.split(",") if topic.strip())
+    try:
+        await lag_collector_loop(settings, topics, settings.kafka_lag_refresh_seconds)
+    except Exception:
+        log.exception("kafka lag collector stopped; API continues serving")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     task = None
     if settings.kafka_lag_refresh_seconds > 0:
-        topics = tuple(
-            topic.strip() for topic in settings.kafka_lag_topics.split(",") if topic.strip()
-        )
-        task = asyncio.create_task(
-            lag_collector_loop(settings, topics, settings.kafka_lag_refresh_seconds)
-        )
+        task = asyncio.create_task(_run_lag_collector())
     yield
     if task is not None:
         task.cancel()

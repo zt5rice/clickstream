@@ -161,3 +161,23 @@ curl -s http://localhost:8090/health
 
 See [docs/ai-assistant.md](docs/ai-assistant.md) and
 [ai_assistant/README.md](ai_assistant/README.md).
+
+## Phase 3 add-ons — kind (P3-01)
+
+Local Kubernetes deployment of the core subset (PostgreSQL, ClickHouse, Redis,
+Kafka KRaft, API) plus a Spark verification Job. Manifests live in `k8s/`
+(kustomize).
+
+```bash
+make kind-up          # create the kind cluster (control-plane + worker)
+make kind-load        # load locally-built api/spark images into kind
+make kind-apply       # apply the clickstream manifests (namespace + core services)
+make kind-topics      # create clicks.raw / clicks.dlq (kafka-init Job)
+make kind-spark-check # run the Spark (Delta) verification Job
+make kind-down        # delete the cluster
+```
+
+Verified on 2026-09-06: all core pods `Running/Ready`, API `/ready` returns
+postgres/clickhouse/kafka all `true`, and the Spark Job completes with an
+idempotent Delta write (60 events). Notes and fixes that came out of the kind
+bring-up are documented in `docs/kind-bring-up.md`.
