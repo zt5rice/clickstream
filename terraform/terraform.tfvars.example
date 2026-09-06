@@ -1,0 +1,9 @@
+region              = "us-west-2"
+cluster_name        = "clickstream-demo"
+environment         = "demo"
+cluster_version     = "1.31"
+vpc_cidr            = "10.0.0.0/16"
+node_desired_size   = 1
+node_min_size       = 1
+node_max_size       = 2
+node_instance_types = ["t3.medium"]

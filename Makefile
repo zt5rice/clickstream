@@ -1,5 +1,5 @@
 # clickstream - local development tooling
-.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test delta-demo quality-run go-ops-test go-ops-build ansible-check ansible-provision ai-assistant-up kind-up kind-down kind-load kind-apply kind-logs kind-topics kind-spark-check helm-lint helm-template helm-up helm-install-cert-manager check eks-apply eks-destroy
+.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test delta-demo quality-run go-ops-test go-ops-build ansible-check ansible-provision ai-assistant-up kind-up kind-down kind-load kind-apply kind-logs kind-topics kind-spark-check helm-lint helm-template helm-up helm-install-cert-manager eks-init eks-validate eks-plan eks-apply eks-destroy check
 
 # Prefer the pinned tools inside .venv when present (after `make init`).
 RUFF ?= $(if $(wildcard .venv/bin/ruff),.venv/bin/ruff,ruff)
@@ -113,8 +113,17 @@ helm-up: ## Install/upgrade the chart into the clickstream namespace
 helm-install-cert-manager: ## Install cert-manager v1.16.3 (self-signed issuer)
 	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.3/cert-manager.yaml
 
+eks-init: ## Initialize Terraform (downloads providers/modules)
+	cd terraform && terraform init
+
+eks-validate: ## Validate Terraform configuration
+	cd terraform && terraform validate
+
+eks-plan: ## Terraform plan (requires AWS credentials; no changes applied)
+	cd terraform && terraform plan
+
 eks-apply:
-	cd terraform && terraform init && terraform apply
+	cd terraform && terraform init && terraform validate && terraform apply
 
 eks-destroy:
 	cd terraform && terraform destroy
