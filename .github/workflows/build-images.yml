@@ -1,0 +1,90 @@
+name: Build & push images (GHCR)
+
+# Build and publish service images on main only (and on manual dispatch).
+# Doc-only changes are ignored to save Actions minutes; a newer push on the
+# same ref cancels the superseded run.
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - README.md
+      - "docs/**"
+      - "*.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: build-images-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: producer
+            dockerfile: producer/Dockerfile
+          - service: api
+            dockerfile: api/Dockerfile
+          - service: spark
+            dockerfile: spark/Dockerfile
+          - service: etl
+            dockerfile: etl/Dockerfile
+          - service: ai-assistant
+            dockerfile: ai_assistant/Dockerfile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push ${{ matrix.service }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/${{ matrix.service }}:sha-${{ github.sha }}
+            ghcr.io/${{ github.repository }}/${{ matrix.service }}:latest
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+
+  # Optional EKS deploy. Disabled by default (`if: false`); enable after Phase 3
+  # Terraform/EKS exists by setting the condition and adding the secrets below.
+  deploy-eks:
+    if: false
+    needs: build-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: Update kubeconfig (EKS)
+        run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region ${{ vars.AWS_REGION }}
+      - name: Helm upgrade clickstream
+        run: |
+          helm upgrade --install clickstream k8s/helm/clickstream \
+            --namespace clickstream --create-namespace \
+            --set certManager.enabled=true \
+            --set images.api.repository=ghcr.io/${{ github.repository }}/api \
+            --set images.api.tag=sha-${{ github.sha }}
