@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafka-init
+spec:
+  backoffLimit: 8
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: kafka-init
+          image: {{ .Values.kafka.image }}
+          imagePullPolicy: IfNotPresent
+          command:
+            - bash
+            - -c
+            - |
+              set -e
+              echo "waiting for kafka..."
+              for i in $(seq 1 60); do
+                /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --list >/dev/null 2>&1 && break
+                sleep 5
+              done
+              for topic in clicks.raw clicks.dlq; do
+                /opt/bitnami/kafka/bin/kafka-topics.sh \
+                  --bootstrap-server kafka:9092 \
+                  --create --if-not-exists --topic "$topic" \
+                  --partitions 3 --replication-factor 1
+              done

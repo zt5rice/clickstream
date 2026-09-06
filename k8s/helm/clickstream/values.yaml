@@ -1,0 +1,52 @@
+# clickstream chart values (P3-03)
+namespace: clickstream
+
+images:
+  api:
+    repository: clickstream-api
+    tag: k8s-20260906
+    pullPolicy: IfNotPresent
+  spark:
+    repository: clickstream-spark-submit
+    tag: k8s-20260906
+    pullPolicy: IfNotPresent
+
+postgres:
+  image: postgres:16.4
+  storage: 1Gi
+clickhouse:
+  image: clickhouse/clickhouse-server:24.8
+  storage: 1Gi
+redis:
+  image: redis:7.4-alpine
+kafka:
+  image: bitnamilegacy/kafka:3.7
+  storage: 2Gi
+  clusterId: MkU3OEVBNTcwNTJENDM2Qk
+
+api:
+  replicas: 1
+  env:
+    API_PORT: "8000"
+    POSTGRES_HOST: postgres
+    POSTGRES_PORT: "5432"
+    POSTGRES_USER: click
+    POSTGRES_PASSWORD: click
+    POSTGRES_DB: clickstream
+    CLICKHOUSE_HOST: clickhouse
+    CLICKHOUSE_PORT: "8123"
+    CLICKHOUSE_USER: click
+    CLICKHOUSE_PASSWORD: click
+    CLICKHOUSE_DATABASE: olap
+    KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    KAFKA_LAG_REFRESH_SECONDS: "15"
+    KAFKA_LAG_TOPICS: clicks.raw,clicks.dlq
+    REDIS_HOST: redis
+    REDIS_PORT: "6379"
+    CACHE_TTL_SECONDS: "10"
+    RATE_LIMIT_MAX_REQUESTS: "60"
+    RATE_LIMIT_WINDOW_SECONDS: "60"
+
+certManager:
+  enabled: false
+  issuerName: clickstream-selfsigned
