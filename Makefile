@@ -1,5 +1,5 @@
 # clickstream - local development tooling
-.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test delta-demo quality-run go-ops-test go-ops-build ansible-check ansible-provision ai-assistant-up check kind-up kind-down eks-apply eks-destroy
+.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test delta-demo quality-run go-ops-test go-ops-build ansible-check ansible-provision ai-assistant-up kind-up kind-down kind-load kind-apply kind-logs check kind-up kind-down eks-apply eks-destroy
 
 # Prefer the pinned tools inside .venv when present (after `make init`).
 RUFF ?= $(if $(wildcard .venv/bin/ruff),.venv/bin/ruff,ruff)
@@ -79,10 +79,26 @@ check: ## Lint, format-check, and run the test suite
 	$(PYTEST) tests/ -v
 
 kind-up:
-	kind create cluster --name clickstream
+	kind create cluster --config k8s/kind-config.yaml --name clickstream
 
 kind-down:
 	kind delete cluster --name clickstream
+
+kind-load: ## Load locally-built API image into kind
+	kind load docker-image clickstream-api:k8s-20260906 --name clickstream
+	kind load docker-image clickstream-spark-submit:k8s-20260906 --name clickstream
+
+kind-apply: ## Apply the clickstream k8s manifests (core subset)
+	kubectl apply -k k8s/
+
+kind-logs: ## Tail logs of kind workloads in the clickstream namespace
+	kubectl logs -n clickstream -l app=api --tail=50
+
+kind-topics: ## Create Kafka topics via the kafka-init Job (idempotent)
+	kubectl apply -f k8s/kafka-init.yaml -n clickstream
+
+kind-spark-check: ## Run the Spark (Delta) verification Job
+	kubectl apply -f k8s/spark-check-job.yaml -n clickstream
 
 eks-apply:
 	cd terraform && terraform init && terraform apply
