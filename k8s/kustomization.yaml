@@ -1,0 +1,39 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: clickstream
+
+resources:
+  - namespace.yaml
+  - postgres.yaml
+  - postgres-init.yaml
+  - clickhouse.yaml
+  - clickhouse-init.yaml
+  - redis.yaml
+  - kafka.yaml
+  - kafka-init.yaml
+  - spark-check-job.yaml
+  - api.yaml
+
+configMapGenerator:
+  - name: api-config
+    literals:
+      - API_PORT=8000
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=click
+      - POSTGRES_PASSWORD=click
+      - POSTGRES_DB=clickstream
+      - CLICKHOUSE_HOST=clickhouse
+      - CLICKHOUSE_PORT=8123
+      - CLICKHOUSE_USER=click
+      - CLICKHOUSE_PASSWORD=click
+      - CLICKHOUSE_DATABASE=olap
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_LAG_REFRESH_SECONDS=15
+      - KAFKA_LAG_TOPICS=clicks.raw,clicks.dlq
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CACHE_TTL_SECONDS=10
+      - RATE_LIMIT_MAX_REQUESTS=60
+      - RATE_LIMIT_WINDOW_SECONDS=60

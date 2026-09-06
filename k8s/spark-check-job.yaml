@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: spark-check
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: spark-check
+          image: clickstream-spark-submit:k8s-20260906
+          imagePullPolicy: IfNotPresent
+          command:
+            - /opt/spark/bin/spark-submit
+            - --master
+            - "local[1]"
+            - --packages
+            - io.delta:delta-spark_2.12:3.2.1
+            - --conf
+            - spark.jars.ivy=/tmp/.ivy2
+            - /opt/clickstream/spark_jobs/delta_lakehouse.py
+            - all
