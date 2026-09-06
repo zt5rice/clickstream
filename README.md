@@ -215,3 +215,20 @@ step exists but is disabled (`if: false`) until Phase 3 EKS is ready.
 ```
 
 See [docs/ghcr-ci.md](docs/ghcr-ci.md).
+
+## Phase 3 add-ons — Terraform EKS (P3-02)
+
+`terraform/` defines the EKS platform: VPC (2 AZs + NAT) and EKS cluster with a
+managed node group (`t3.medium`, 1–2 nodes), using pinned community modules.
+
+```bash
+make eks-init       # terraform init (downloads providers/modules)
+make eks-validate   # terraform validate
+make eks-plan       # terraform plan (needs AWS creds; no changes)
+# make eks-apply    # GATED: only with explicit approval (EKS costs money)
+make eks-destroy    # teardown everything
+```
+
+Code + `validate` are complete (2026-09-06). `plan`/`apply` are gated on AWS
+credentials and explicit user approval. See
+[terraform/README.md](terraform/README.md).
