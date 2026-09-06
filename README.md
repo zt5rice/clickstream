@@ -199,3 +199,19 @@ Verified on 2026-09-06 on kind: release `deployed`, all core pods
 `Running/Ready`, `kafka-init` Job `Completed` (topics auto-created), API
 `/ready` = all checks `true`, and ClusterIssuer `clickstream-selfsigned`
 `Ready=True`.
+
+## Phase 3 add-ons — CI/CD: GHCR images (P3-04)
+
+`.github/workflows/build-images.yml` builds and pushes producer/api/spark/etl/
+ai-assistant images to **GHCR** on `main` (tagged `sha-<commit>` + `latest`),
+ignores doc-only changes, and cancels superseded runs. The optional EKS deploy
+step exists but is disabled (`if: false`) until Phase 3 EKS is ready.
+
+```bash
+# Manual trigger from the GitHub UI: Actions → "Build & push images (GHCR)"
+# Required when enabling the deploy step:
+#   secrets: AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY
+#   vars:    AWS_REGION / EKS_CLUSTER_NAME
+```
+
+See [docs/ghcr-ci.md](docs/ghcr-ci.md).
