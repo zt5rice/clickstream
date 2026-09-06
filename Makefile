@@ -1,5 +1,5 @@
 # clickstream - local development tooling
-.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test delta-demo quality-run go-ops-test go-ops-build ansible-check ansible-provision ai-assistant-up kind-up kind-down kind-load kind-apply kind-logs check kind-up kind-down eks-apply eks-destroy
+.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test delta-demo quality-run go-ops-test go-ops-build ansible-check ansible-provision ai-assistant-up kind-up kind-down kind-load kind-apply kind-logs kind-topics kind-spark-check helm-lint helm-template helm-up helm-install-cert-manager check eks-apply eks-destroy
 
 # Prefer the pinned tools inside .venv when present (after `make init`).
 RUFF ?= $(if $(wildcard .venv/bin/ruff),.venv/bin/ruff,ruff)
@@ -99,6 +99,19 @@ kind-topics: ## Create Kafka topics via the kafka-init Job (idempotent)
 
 kind-spark-check: ## Run the Spark (Delta) verification Job
 	kubectl apply -f k8s/spark-check-job.yaml -n clickstream
+
+helm-lint: ## Lint the clickstream Helm chart
+	helm lint k8s/helm/clickstream
+
+helm-template: ## Render the chart with helm template
+	helm template clickstream k8s/helm/clickstream
+
+helm-up: ## Install/upgrade the chart into the clickstream namespace
+	helm upgrade --install clickstream k8s/helm/clickstream \
+		--namespace clickstream --create-namespace
+
+helm-install-cert-manager: ## Install cert-manager v1.16.3 (self-signed issuer)
+	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.3/cert-manager.yaml
 
 eks-apply:
 	cd terraform && terraform init && terraform apply
