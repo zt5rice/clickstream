@@ -105,7 +105,7 @@ Optional Avro: `schemas/click.avsc` + Confluent Schema Registry for schema evolu
 
 1. **Local (fast loop):** `docker compose up -d` → Kafka (KRaft), Spark, Postgres, Prometheus, Grafana, API.
 2. **Local K8s:** `make kind-up` → `kubectl apply -f k8s/` (same images, validates manifests).
-3. **AWS EKS:** `terraform/` (VPC, EKS, node group, ALB) → deploy via kubectl/Helm. **Remember `make eks-destroy` after testing to avoid cost.**
+3. **AWS EKS:** `terraform/` (VPC, EKS, node group, ALB) → deploy via kubectl/Helm. **Teardown is mandatory after testing** — see `make eks-destroy` / `make eks-destroy-all` and `docs/cost-control.md` (P3-06).
 4. **Optional managed:** `terraform/msk/` (MSK instead of self-hosted Kafka), OpenSearch sink.
 
 ## 7. Reliability & Monitoring
