@@ -1,5 +1,5 @@
 # clickstream - local development tooling
-.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test delta-demo quality-run go-ops-test go-ops-build ansible-check ansible-provision ai-assistant-up kind-up kind-down kind-load kind-apply kind-logs kind-topics kind-spark-check helm-lint helm-template helm-up helm-install-cert-manager eks-init eks-validate eks-plan eks-apply eks-destroy check
+.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test delta-demo quality-run go-ops-test go-ops-build ansible-check ansible-provision ai-assistant-up kind-up kind-down kind-load kind-apply kind-logs kind-topics kind-spark-check helm-lint helm-template helm-up helm-install-cert-manager eks-init eks-validate eks-plan eks-plan-destroy eks-apply eks-destroy eks-destroy-all check
 
 # Prefer the pinned tools inside .venv when present (after `make init`).
 RUFF ?= $(if $(wildcard .venv/bin/ruff),.venv/bin/ruff,ruff)
@@ -122,8 +122,16 @@ eks-validate: ## Validate Terraform configuration
 eks-plan: ## Terraform plan (requires AWS credentials; no changes applied)
 	cd terraform && terraform plan
 
+eks-plan-destroy: ## Show what terraform destroy would remove (no changes)
+	cd terraform && terraform plan -destroy
+
 eks-apply:
 	cd terraform && terraform init && terraform validate && terraform apply
 
-eks-destroy:
-	cd terraform && terraform destroy
+eks-destroy: ## DESTROY the EKS stack (auto-approve) - run after every demo!
+	@echo "WARNING: destroying all EKS resources created by terraform/"
+	cd terraform && terraform destroy -auto-approve
+
+eks-destroy-all: ## Teardown EKS + local kind cluster + compose (full cleanup)
+	$(MAKE) eks-destroy
+	$(MAKE) kind-down
