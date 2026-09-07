@@ -232,3 +232,17 @@ make eks-destroy    # teardown everything
 Code + `validate` are complete (2026-09-06). `plan`/`apply` are gated on AWS
 credentials and explicit user approval. See
 [terraform/README.md](terraform/README.md).
+
+## Phase 3 add-ons — teardown & cost control (P3-06)
+
+EKS is destroyed as a first-class action so demo costs never linger:
+
+```bash
+make eks-plan-destroy   # preview what destroy would remove
+make eks-destroy        # terraform destroy -auto-approve
+make kind-down          # delete the local kind cluster
+make eks-destroy-all    # EKS + kind teardown
+```
+
+See [docs/cost-control.md](docs/cost-control.md) for the cost rules and the
+post-demo checklist.
