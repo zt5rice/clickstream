@@ -1,6 +1,6 @@
 # Clickstream — Phased Project Plan
 
-Status: v0.4 (Phase 3 complete) · Last updated: 2026-09-07
+Status: v0.5 (Phase 4 core complete) · Last updated: 2026-09-08
 
 This document is the living execution plan for the clickstream portfolio project.
 It complements `DESIGN.md` (architecture / tech-stack coverage) and the docs in
@@ -261,7 +261,7 @@ Each addition must actually run locally and be documented in README + DESIGN.md.
 - [x] **P3-06** Teardown automation + cost control (`make eks-destroy`)
 - [x] **P3-07** Deploy to EKS, verify, teardown; document results
 
-## 6. Phase 4 — Reliability & Scale (stretch)
+## 6. Phase 4 — Reliability & Scale (core complete: 2026-09-08; optional items deferred)
 
 | Item | Details |
 |---|---|
@@ -274,16 +274,16 @@ Each addition must actually run locally and be documented in README + DESIGN.md.
 
 ### 6.1 To-dos (tracked in Linear: Milestone M4, one ticket per item)
 
-- [ ] **P4-01** SLO/SLI + error budgets (docs)
-- [ ] **P4-02** Alertmanager + runbooks + post-incident review template
-- [ ] **P4-03** Load testing (k6 / Locust) + capacity estimates
-- [ ] **P4-04** Chaos / failure drills (kill broker/pod; record MTTR)
-- [ ] **P4-05** Optional: Kong API gateway
-- [ ] **P4-06** Optional: Istio service mesh (mTLS, canary)
-- [ ] **P4-07** Optional: Flink variant
-- [ ] **P4-08** Optional: GitOps (Argo CD / Argo Rollouts)
-- [ ] **P4-09** Optional: AWS MSK / OpenSearch
-- [ ] **P4-10** Document results (SLO compliance, capacity, MTTR)
+- [x] **P4-01** SLO/SLI + error budgets (docs)
+- [x] **P4-02** Alertmanager + runbooks + post-incident review template
+- [x] **P4-03** Load testing (k6 / Locust) + capacity estimates
+- [x] **P4-04** Chaos / failure drills (kill broker/pod; record MTTR)
+- [ ] **P4-05** (deferred) Optional: Kong API gateway
+- [ ] **P4-06** (deferred) Optional: Istio service mesh (mTLS, canary)
+- [ ] **P4-07** (deferred) Optional: Flink variant
+- [ ] **P4-08** (deferred) Optional: GitOps (Argo CD / Argo Rollouts)
+- [ ] **P4-09** (deferred) Optional: AWS MSK / OpenSearch
+- [x] **P4-10** Document results (SLO compliance, capacity, MTTR)
 
 ## 7. Phase 5 — Portfolio Packaging
 
@@ -383,5 +383,5 @@ environment, and configuration used. No numbers are claimed without a measured r
 
 ## 12. NEXT SESSION (deferred, never half-added)
 
-- Phase 4: SLO/SLI, runbooks, PIR, k6/Locust, chaos drills, Kong/Istio/Flink/GitOps.
+- Phase 4 optional (deferred): Kong/Istio/Flink variant/Argo GitOps/AWS MSK/OpenSearch.
 - Phase 5: LICENSE (MIT), architecture diagram, interview talking points, demo script.
