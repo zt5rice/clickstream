@@ -53,6 +53,11 @@ Kafka down, EKS cost guard) plus a blameless Post-Incident Review template —
 see [docs/runbooks.md](docs/runbooks.md) and
 [docs/pir-template.md](docs/pir-template.md).
 
+## Phase 4 add-ons — load testing (P4-03)
+
+k6 read-API load test (`make load-test`, pinned `grafana/k6`) plus capacity
+notes — see [docs/load-testing-capacity.md](docs/load-testing-capacity.md).
+
 ## Live demo
 
 See [docs/demo-checklist.md](docs/demo-checklist.md) for a step-by-step checklist
