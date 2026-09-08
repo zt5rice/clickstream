@@ -51,10 +51,10 @@ where they fit, and how much effort each takes).
 - Update `docker-compose.yml` and the directory structure as components are added
   (`dags/`, `dbt/`, `quality/`, `k8s/helm/`, `monitoring/jaeger/`, etc.).
 
-## 7. Additions from a Staff Data Engineer JD (San Diego)
+## 7. Additions from a Staff Data Engineer JD
 
-Fit note: this role requires 8+ years (a stretch today), but it is in San Diego and its stack is highly
-relevant. The quick wins below are worth adding to the project.
+Fit note: this role requires 8+ years (a stretch today), but its stack is
+highly relevant. The quick wins below are worth adding to the project.
 
 ### Quick wins (add to v1)
 
@@ -75,7 +75,7 @@ relevant. The quick wins below are worth adding to the project.
 - Spark Structured Streaming, Kafka, Iceberg/Delta (lakehouse), FastAPI REST/JSON, ETL/batch,
   Prometheus/Grafana, EKS, Terraform, GitHub Actions — all already in DESIGN.md / this document.
 
-## 8. Additions from a Senior Platform/Reliability Engineer JD (San Diego)
+## 8. Additions from a Senior Platform/Reliability Engineer JD
 
 Fit note: 6+ years with 3+ years Go + IaC is a stretch today, but the reliability/automation track is
 highly relevant; the quick wins below also strengthen other targets (e.g., Apple's Golang backend role).
@@ -102,7 +102,7 @@ highly relevant; the quick wins below also strengthen other targets (e.g., Apple
 - Terraform (EKS), Kubernetes, Kafka (self-hosted + optional MSK), SLO/SLI + observability
   (`sre-reliability-addons.md`), OpenTelemetry, AI-powered automation (`ai_assistant/`).
 
-## 9. Additions from a Senior Production Operations Engineer JD (San Diego)
+## 9. Additions from a Senior Production Operations Engineer JD
 
 Fit note: 5+ years + 3+ years AWS Java/API ops is a stretch on years, but the on-call / incident /
 AWS / AI-assisted workflows story overlaps strongly with existing experience. Quick wins below.
