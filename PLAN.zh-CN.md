@@ -1,6 +1,6 @@
 # Clickstream — 分阶段项目计划（中文版）
 
-状态：v0.3（Phase 2 已完成）· 最后更新：2026-09-04
+状态：v0.4（Phase 3 已完成）· 最后更新：2026-09-07
 
 本文档是 clickstream 作品集项目的可执行计划（中文版）。它与 `DESIGN.md`（架构 / 技术栈覆盖）以及
 `docs/` 下的文档（附加技术研究、协作与合规边界）互为补充。工作按阶段执行；每个阶段结束时应包含：
@@ -223,7 +223,7 @@ flowchart TB
 - [x] **P2-08** ai_assistant：LLM 流水线运维助手 + 对 lag/延迟做异常检测
 - [x] **P2-09** 逐项本地验证；更新 README + DESIGN.md；lint + test 全绿
 
-## 5. Phase 3 — 部署与平台（kind → EKS）
+## 5. Phase 3 — 部署与平台（已完成：2026-09-07）
 
 | 项目 | 说明 |
 |---|---|
@@ -236,13 +236,13 @@ flowchart TB
 
 ### 5.1 To-dos（Linear 追踪：Milestone M3，每个条目一张 ticket）
 
-- [ ] **P3-01** kind：本地 Kubernetes 集群 + 清单文件
-- [ ] **P3-02** Terraform EKS：VPC、节点组、ALB
-- [ ] **P3-03** Helm charts + cert-manager
-- [ ] **P3-04** CI/CD：GitHub Actions（lint、unit、integration、构建推送、可选部署）
-- [ ] **P3-05** 可选：AWS Lambda + API Gateway（DLQ 告警处理 / 新鲜度检查）+ CloudWatch
-- [ ] **P3-06** 拆除自动化 + 成本控制（`make eks-destroy`）
-- [ ] **P3-07** 部署到 EKS、验证、拆除并记录结果
+- [x] **P3-01** kind：本地 Kubernetes 集群 + 清单文件
+- [x] **P3-02** Terraform EKS：VPC、节点组、ALB
+- [x] **P3-03** Helm charts + cert-manager
+- [x] **P3-04** CI/CD：GitHub Actions（lint、unit、integration、构建推送、可选部署）
+- [ ] **P3-05** （可选，延后）AWS Lambda + API Gateway（DLQ 告警处理 / 新鲜度检查）+ CloudWatch
+- [x] **P3-06** 拆除自动化 + 成本控制（`make eks-destroy`）
+- [x] **P3-07** 部署到 EKS、验证、拆除并记录结果
 
 ## 6. Phase 4 — 可靠性 & 扩展（延伸）
 
@@ -356,6 +356,5 @@ flowchart TB
 
 ## 12. NEXT SESSION（推迟项，绝不做一半）
 
-- Phase 3：kind、Terraform EKS、Helm、cert-manager、GitHub Actions 部署、Lambda。
 - Phase 4：SLO/SLI、runbook、PIR、k6/Locust、混沌演练、Kong/Istio/Flink/GitOps。
 - Phase 5：LICENSE（MIT）、架构图、面试要点、演示脚本。

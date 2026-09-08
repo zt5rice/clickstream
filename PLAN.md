@@ -1,6 +1,6 @@
 # Clickstream — Phased Project Plan
 
-Status: v0.3 (Phase 2 complete) · Last updated: 2026-09-04
+Status: v0.4 (Phase 3 complete) · Last updated: 2026-09-07
 
 This document is the living execution plan for the clickstream portfolio project.
 It complements `DESIGN.md` (architecture / tech-stack coverage) and the docs in
@@ -240,7 +240,7 @@ Each addition must actually run locally and be documented in README + DESIGN.md.
 - [x] **P2-08** ai_assistant: LLM pipeline-ops assistant + anomaly detection on lag/latency
 - [x] **P2-09** Verify each add-on locally; update README + DESIGN.md; lint + test green
 
-## 5. Phase 3 — Deployment & Platform (kind → EKS)
+## 5. Phase 3 — Deployment & Platform (complete: 2026-09-07)
 
 | Item | Details |
 |---|---|
@@ -253,13 +253,13 @@ Each addition must actually run locally and be documented in README + DESIGN.md.
 
 ### 5.1 To-dos (tracked in Linear: Milestone M3, one ticket per item)
 
-- [ ] **P3-01** kind: local Kubernetes cluster + manifests
-- [ ] **P3-02** Terraform EKS: VPC, node group, ALB
-- [ ] **P3-03** Helm charts + cert-manager
-- [ ] **P3-04** CI/CD: GitHub Actions (lint, unit, integration, build & push, optional deploy)
-- [ ] **P3-05** Optional: AWS Lambda + API Gateway (DLQ alert handler / freshness checker) + CloudWatch
-- [ ] **P3-06** Teardown automation + cost control (`make eks-destroy`)
-- [ ] **P3-07** Deploy to EKS, verify, teardown; document results
+- [x] **P3-01** kind: local Kubernetes cluster + manifests
+- [x] **P3-02** Terraform EKS: VPC, node group, ALB
+- [x] **P3-03** Helm charts + cert-manager
+- [x] **P3-04** CI/CD: GitHub Actions (lint, unit, integration, build & push, optional deploy)
+- [ ] **P3-05** (optional, deferred) AWS Lambda + API Gateway (DLQ alert handler / freshness checker) + CloudWatch
+- [x] **P3-06** Teardown automation + cost control (`make eks-destroy`)
+- [x] **P3-07** Deploy to EKS, verify, teardown; document results
 
 ## 6. Phase 4 — Reliability & Scale (stretch)
 
@@ -383,6 +383,5 @@ environment, and configuration used. No numbers are claimed without a measured r
 
 ## 12. NEXT SESSION (deferred, never half-added)
 
-- Phase 3: kind, Terraform EKS, Helm, cert-manager, GitHub Actions deploy, Lambda.
 - Phase 4: SLO/SLI, runbooks, PIR, k6/Locust, chaos drills, Kong/Istio/Flink/GitOps.
 - Phase 5: LICENSE (MIT), architecture diagram, interview talking points, demo script.
