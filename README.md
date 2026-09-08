@@ -58,6 +58,11 @@ see [docs/runbooks.md](docs/runbooks.md) and
 k6 read-API load test (`make load-test`, pinned `grafana/k6`) plus capacity
 notes — see [docs/load-testing-capacity.md](docs/load-testing-capacity.md).
 
+## Phase 4 add-ons — chaos drills (P4-04)
+
+Kind-based failure drills (delete API deployment / Kafka pod) that measure
+self-healing MTTR — see [docs/chaos-drills.md](docs/chaos-drills.md).
+
 ## Live demo
 
 See [docs/demo-checklist.md](docs/demo-checklist.md) for a step-by-step checklist
