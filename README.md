@@ -10,6 +10,53 @@ A resume-building project: **Kafka + Spark/Flink + EKS** real-time clickstream p
 - **Stack:** Python, Java/Scala (optional), Apache Kafka, Spark Structured Streaming, optional Flink, PostgreSQL,
   FastAPI (REST/JSON, optional gRPC/WebSockets), Docker, kind, AWS EKS (Terraform), Prometheus/Grafana, GitHub Actions, pytest.
 
+## Architecture
+
+```mermaid
+flowchart TB
+    P["producer/ — click simulator (~100 ev/s)"]
+    K["Kafka (KRaft) — clicks.raw"]
+    DLQ["clicks.dlq"]
+    SP["Spark Structured Streaming — parse + 1-min windows"]
+    PG[("PostgreSQL — curated")]
+    CH[("ClickHouse — OLAP")]
+    API["FastAPI — read-only"]
+    REDIS[("Redis — cache + rate limit")]
+    AIR["Airflow — freshness check + daily rollup"]
+    DBT["dbt — models/tests"]
+    Q["Soda + native CH checks"]
+    GO["go_ops CLI"]
+    AI["ai_assistant"]
+    GRA["Grafana / Prometheus"]
+
+    P -->|JSON events| K
+    K --> SP
+    SP -->|valid events| PG
+    SP -->|raw + windows| CH
+    SP -->|parse failures| DLQ
+    PG --> API
+    CH --> API
+    API --> REDIS
+    API --> GRA
+    AIR -->|schedules/validates| PG
+    DBT -->|transform layer| PG
+    Q --> PG
+    Q --> CH
+    GO --> API
+    AI --> API
+
+    subgraph DEPLOY["Deployment"]
+      direction LR
+      COMPOSE["Docker Compose (local)"]
+      KIND["kind + Helm"]
+      EKS["Terraform EKS (SPOT, teardown after demo)"]
+    end
+    DEPLOY -. runs the core stack .-> API
+```
+
+See [docs/design-decisions.md](docs/design-decisions.md) for the key choices and
+trade-offs behind this architecture.
+
 ## Quick Start (local)
 
 ```bash
@@ -78,6 +125,10 @@ LICENSE, interview/demo materials) — see [PLAN.md](PLAN.md) §7.
 
 SLO snapshot, load/capacity numbers and MTTR are summarized in
 [docs/m4-results.md](docs/m4-results.md).
+
+## Design decisions
+
+See [docs/design-decisions.md](docs/design-decisions.md).
 
 ## Phase 4 add-ons — SLO/SLI + error budget (P4-01)
 
