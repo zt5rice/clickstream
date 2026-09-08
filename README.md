@@ -18,11 +18,13 @@ make test    # run unit + integration tests
 make down    # teardown
 ```
 
-## Measured metrics (Phase 1)
+## Measured metrics (by phase)
 
 Measured on a local run (macOS + colima/Docker, `make up`, steady mode, ~53 min);
 see [docs/demo-checklist.md](docs/demo-checklist.md) for step-by-step reproduction
 and [PLAN.md](PLAN.md) §9 for methodology.
+
+### Phase 1 — local pipeline (2026-09-01)
 
 | Metric | Value |
 |---|---|
@@ -36,6 +38,34 @@ and [PLAN.md](PLAN.md) §9 for methodology.
 | Curated storage after ~53 min | Postgres `page_views_1m` 22,754 rows · ClickHouse `olap.clicks` 319,759 events |
 
 Measured 2026-09-02 06:54 UTC (= 2026-09-01 23:54 PDT).
+
+### Phase 2 — engineering verification (2026-09-04)
+
+| Check | Result |
+|---|---|
+| dbt models / tests | 4 models built · 15/15 data tests pass |
+| Data quality (Soda + native ClickHouse) | 11/11 checks pass |
+| Delta Lake (local) | 60 events → 60 rows · MERGE run twice, idempotent |
+| Python test suite | 111 passed · ruff clean (pyspark skipped in venv) |
+
+### Phase 3 — kind / Helm / EKS (2026-09-06/07)
+
+| Check | Result |
+|---|---|
+| kind + Helm | all core pods Ready; API `/ready` all-true |
+| Real EKS run (us-west-2, SPOT `t3.medium` ×1) | 55 resources; all pods Ready; `/ready` all-true; destroyed same session |
+| EKS cost | < $2 for ~30–40 min (incl. NAT/EIP/node/EBS) |
+
+### Phase 4 — reliability (2026-09-07/08)
+
+| Check | Result |
+|---|---|
+| k6 load test (20 VUs) | 3,227 requests ≈ 46 req/s · p95 180.6 ms · 0% errors |
+| Chaos MTTR (kind) | API pod 21s · Kafka pod 33s |
+| SLO snapshot | availability 100% · p95 180.6 ms · DLQ 0 (short-run) |
+
+All numbers come from our own demo runs; see `docs/m4-results.md` and
+`docs/eks-run-2026-09-07.md` for detail and honest caveats.
 
 ## Next Steps
 
