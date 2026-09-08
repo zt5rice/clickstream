@@ -1,5 +1,9 @@
 # clickstream — Real-Time Clickstream Streaming Pipeline
 
+> **Personal / portfolio project** — built from scratch for learning and job
+> applications. Not affiliated with any employer; all data is synthetic and all
+> metrics come from our own local/demo runs.
+
 A resume-building project: **Kafka + Spark/Flink + EKS** real-time clickstream pipeline.
 
 - **Design doc:** [DESIGN.md](DESIGN.md) — architecture, tech-stack coverage matrix, milestones, deployment paths.
@@ -62,6 +66,10 @@ see [docs/runbooks.md](docs/runbooks.md) and
 
 k6 read-API load test (`make load-test`, pinned `grafana/k6`) plus capacity
 notes — see [docs/load-testing-capacity.md](docs/load-testing-capacity.md).
+
+## License
+
+MIT — see [LICENSE](LICENSE).
 
 ## Phase 4 add-ons — chaos drills (P4-04)
 
