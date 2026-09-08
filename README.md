@@ -116,19 +116,30 @@ All numbers come from our own demo runs; see `docs/m4-results.md` and
 
 ## Next Steps
 
-Phases 1–4 core are complete (local pipeline → data-engineering add-ons →
-kind/Helm/GHCR/Terraform/EKS → SLO/runbooks/load-test/chaos). Next up:
-**Phase 5 — portfolio packaging** (final metrics, architecture diagram,
-LICENSE, interview/demo materials) — see [PLAN.md](PLAN.md) §7.
+Phases 1–5 core scope are complete (local pipeline → data-engineering add-ons →
+kind/Helm/GHCR/Terraform/EKS → SLO/runbooks/load-test/chaos → portfolio
+packaging). Optional/deferred items and the next roadmap live in
+[PLAN.md](PLAN.md).
 
-## Phase 4 results
+## Phase add-ons index
 
-SLO snapshot, load/capacity numbers and MTTR are summarized in
-[docs/m4-results.md](docs/m4-results.md).
+- **Phase 1 — core pipeline** (producer, Kafka, Spark, PG/CH, API, monitoring):
+  live demo in [docs/demo-checklist.md](docs/demo-checklist.md).
+- **Phase 2 — data engineering**: Airflow, dbt, Delta, Soda/quality, Redis,
+  go_ops, Ansible, ai_assistant (sections below).
+- **Phase 3 — deployment**: kind, Helm + cert-manager, GHCR CI, Terraform EKS,
+  teardown — plus the real-run notes in
+  [docs/eks-run-2026-09-07.md](docs/eks-run-2026-09-07.md).
+- **Phase 4 — reliability**: SLO/error budget, runbooks/PIR, load testing,
+  chaos drills — results in [docs/m4-results.md](docs/m4-results.md).
+- **Design decisions & trade-offs**:
+  [docs/design-decisions.md](docs/design-decisions.md).
 
-## Design decisions
+## Live demo
 
-See [docs/design-decisions.md](docs/design-decisions.md).
+See [docs/demo-checklist.md](docs/demo-checklist.md) for a step-by-step checklist
+(URLs, health checks, PromQL queries, Grafana panels) to run a live demo of the
+local stack.
 
 ## Phase 4 add-ons — SLO/SLI + error budget (P4-01)
 
@@ -148,20 +159,10 @@ see [docs/runbooks.md](docs/runbooks.md) and
 k6 read-API load test (`make load-test`, pinned `grafana/k6`) plus capacity
 notes — see [docs/load-testing-capacity.md](docs/load-testing-capacity.md).
 
-## License
-
-MIT — see [LICENSE](LICENSE).
-
 ## Phase 4 add-ons — chaos drills (P4-04)
 
 Kind-based failure drills (delete API deployment / Kafka pod) that measure
 self-healing MTTR — see [docs/chaos-drills.md](docs/chaos-drills.md).
-
-## Live demo
-
-See [docs/demo-checklist.md](docs/demo-checklist.md) for a step-by-step checklist
-(URLs, health checks, PromQL queries, Grafana panels) to run a live demo of the
-local stack.
 
 ## Phase 2 add-ons — Airflow (P2-01)
 
@@ -363,3 +364,7 @@ make eks-destroy-all    # EKS + kind teardown
 
 See [docs/cost-control.md](docs/cost-control.md) for the cost rules and the
 post-demo checklist.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
