@@ -1,5 +1,5 @@
 # clickstream - local development tooling
-.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test delta-demo quality-run go-ops-test go-ops-build ansible-check ansible-provision ai-assistant-up kind-up kind-down kind-load kind-apply kind-logs kind-topics kind-spark-check helm-lint helm-template helm-up helm-install-cert-manager eks-init eks-validate eks-plan eks-plan-destroy eks-apply eks-destroy eks-destroy-all check
+.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test delta-demo quality-run go-ops-test go-ops-build ansible-check ansible-provision ai-assistant-up kind-up kind-down kind-load kind-apply kind-logs kind-topics kind-spark-check helm-lint helm-template helm-up helm-install-cert-manager eks-init eks-validate eks-plan eks-plan-destroy eks-apply eks-destroy eks-destroy-all load-test check
 
 # Prefer the pinned tools inside .venv when present (after `make init`).
 RUFF ?= $(if $(wildcard .venv/bin/ruff),.venv/bin/ruff,ruff)
@@ -112,6 +112,14 @@ helm-up: ## Install/upgrade the chart into the clickstream namespace
 
 helm-install-cert-manager: ## Install cert-manager v1.16.3 (self-signed issuer)
 	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.3/cert-manager.yaml
+
+LOAD_TEST_IMAGE ?= grafana/k6:0.54.0
+
+load-test: ## Run the k6 read-API load test (needs the local stack up)
+	docker run --rm --add-host host.docker.internal:host-gateway \
+		-v "$(PWD)/scripts/load/k6:/scripts" \
+		$(LOAD_TEST_IMAGE) run /scripts/read-api.js \
+		-e BASE_URL=http://host.docker.internal:8000
 
 eks-init: ## Initialize Terraform (downloads providers/modules)
 	cd terraform && terraform init
