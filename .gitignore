@@ -43,6 +43,11 @@ quality/target/
 # go_ops build output (P2-06)
 go_ops/bin/
 
+# Local-only progress checkpoint (never commit/upload)
+docs/PROGRESS_CHECKPOINT_LOCAL.md
+docs/TODO_TICKETS_PLAN_LOCAL.md
+docs/tech-stack-addons.md
+
 # IDE / OS
 .DS_Store
 .idea/
