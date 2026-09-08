@@ -1,7 +1,7 @@
 # SRE / Reliability Add-ons for the Clickstream Project
 
 Status: v0.1 · Purpose: input for the phased project plan — reliability engineering
-practices worth adding, based on the Sony SIE Site Reliability Engineer II JD (R-123508).
+practices worth adding, based on a Site Reliability Engineer II job description.
 
 Fit note: this SRE role requires 5+ years and Kong/Service Mesh experience, so it is a
 lower-priority target today; the additions below still strengthen Data Engineer applications

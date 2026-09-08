@@ -1,6 +1,6 @@
 # Real-Time Clickstream Streaming Pipeline — Design Document
 
-Status: v0.3 (Phase 1 + Phase 2 complete) · Target: Data Engineer roles (e.g., Sony SIE Data Engineer II, Job ID R-125071)
+Status: v0.3 (Phase 1 + Phase 2 complete) · Target: Data Engineer roles (portfolio, resume-oriented)
 
 ## 1. Goal
 
@@ -71,7 +71,7 @@ and CI/CD. Every component is small enough to run on a laptop first, then deploy
 
 Optional Avro: `schemas/click.avsc` + Confluent Schema Registry for schema evolution.
 
-## 5. Tech Stack Coverage Matrix (verification against JD R-125071)
+## 5. Tech Stack Coverage Matrix (verification against saved job descriptions)
 
 | JD requirement / mentioned stack | Project module | Status |
 |---|---|---|

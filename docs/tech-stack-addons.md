@@ -7,7 +7,7 @@ where they fit, and how much effort each takes).
 
 | Tech | Why it is common | Where it fits in this project | Effort |
 |---|---|---|---|
-| Apache Airflow / Dagster | Nearly all data-infra roles require orchestration / ETL scheduling; Airflow already used in nanotrack | `etl/` → `dags/`: DAGs that schedule batch loads and validation | M |
+| Apache Airflow / Dagster | Nearly all data-infra roles require orchestration / ETL scheduling | `etl/` → `dags/`: DAGs that schedule batch loads and validation | M |
 | dbt | Transform layer is near-standard in current data-engineering JDs (dbt models / SQL / tests) | `dbt/`: SQL models + tests on top of curated Postgres tables | M |
 | Delta Lake / Iceberg | Lakehouse table formats are the biggest current trend (S3 + Iceberg/Delta) | `spark_jobs/`: write to S3/local with Delta or Iceberg tables | M |
 | Helm | Standard packaging for EKS deployments (JDs often ask for Helm charts) | `k8s/helm/`: package the k8s manifests as a chart | M |
@@ -36,7 +36,7 @@ where they fit, and how much effort each takes).
 1. Do not overstuff the project: 3–4 technologies done deeply beats 10 touched superficially.
 2. Keep the honesty rule: every added technology must actually be run in this project and be
    explainable in interviews (e.g., Helm `values`, dbt `test`, Delta `merge` semantics).
-3. Do not bring any Intuit-internal material into the repo (see `collaboration-and-resources.md`).
+3. Do not bring any employer-internal material into the repo (see `collaboration-and-resources.md`).
 
 ## 5. Suggested phasing
 
@@ -51,7 +51,7 @@ where they fit, and how much effort each takes).
 - Update `docker-compose.yml` and the directory structure as components are added
   (`dags/`, `dbt/`, `quality/`, `k8s/helm/`, `monitoring/jaeger/`, etc.).
 
-## 7. Additions from Staff Software Engineer – Data (R-124982, San Diego)
+## 7. Additions from a Staff Data Engineer JD (San Diego)
 
 Fit note: this role requires 8+ years (a stretch today), but it is in San Diego and its stack is highly
 relevant. The quick wins below are worth adding to the project.
@@ -61,7 +61,7 @@ relevant. The quick wins below are worth adding to the project.
 | Tech | Why | Where it fits | Effort |
 |---|---|---|---|
 | **ClickHouse** | JD explicitly requires ClickHouse / Apache Druid (OLAP) | Add as an OLAP sink: docker-compose service + Spark/Flink writes aggregated data; run SQL analytics against it | S–M (quick) |
-| **AI-powered platform capability** | JD requires AI/ML tooling to automate workflows / improve data quality; reuses existing NL2SQL / GraphAtlas / MCP experience | `api/` or `ai_assistant/`: LLM-based pipeline-ops assistant (explain a Kafka-lag alert, generate SQL against curated tables) | M (reuses existing stack) |
+| **AI-powered platform capability** | JD requires AI/ML tooling to automate workflows / improve data quality | `api/` or `ai_assistant/`: LLM-based pipeline-ops assistant (explain a Kafka-lag alert, generate SQL against curated tables) | M |
 
 ### Not quick (keep optional / v2+)
 
@@ -75,7 +75,7 @@ relevant. The quick wins below are worth adding to the project.
 - Spark Structured Streaming, Kafka, Iceberg/Delta (lakehouse), FastAPI REST/JSON, ETL/batch,
   Prometheus/Grafana, EKS, Terraform, GitHub Actions — all already in DESIGN.md / this document.
 
-## 8. Additions from Senior Software Engineer (Platform Data Reliability & Automation) (R-124371, San Diego)
+## 8. Additions from a Senior Platform/Reliability Engineer JD (San Diego)
 
 Fit note: 6+ years with 3+ years Go + IaC is a stretch today, but the reliability/automation track is
 highly relevant; the quick wins below also strengthen other targets (e.g., Apple's Golang backend role).
@@ -102,7 +102,7 @@ highly relevant; the quick wins below also strengthen other targets (e.g., Apple
 - Terraform (EKS), Kubernetes, Kafka (self-hosted + optional MSK), SLO/SLI + observability
   (`sre-reliability-addons.md`), OpenTelemetry, AI-powered automation (`ai_assistant/`).
 
-## 9. Additions from Senior Production Operations Engineer (R-125020, San Diego)
+## 9. Additions from a Senior Production Operations Engineer JD (San Diego)
 
 Fit note: 5+ years + 3+ years AWS Java/API ops is a stretch on years, but the on-call / incident /
 AWS / AI-assisted workflows story overlaps strongly with existing experience. Quick wins below.
