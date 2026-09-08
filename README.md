@@ -35,10 +35,15 @@ Measured 2026-09-02 06:54 UTC (= 2026-09-01 23:54 PDT).
 
 ## Next Steps
 
-Phases 1–3 are complete (local pipeline → data-engineering add-ons → kind/Helm/
-GHCR/Terraform + one verified EKS run). Next up: **Phase 4 — reliability &
-scale** (SLO/SLI, runbooks, load testing, chaos drills) — see
-[PLAN.md](PLAN.md) §6 for the tracked milestones/tickets.
+Phases 1–4 core are complete (local pipeline → data-engineering add-ons →
+kind/Helm/GHCR/Terraform/EKS → SLO/runbooks/load-test/chaos). Next up:
+**Phase 5 — portfolio packaging** (final metrics, architecture diagram,
+LICENSE, interview/demo materials) — see [PLAN.md](PLAN.md) §7.
+
+## Phase 4 results
+
+SLO snapshot, load/capacity numbers and MTTR are summarized in
+[docs/m4-results.md](docs/m4-results.md).
 
 ## Phase 4 add-ons — SLO/SLI + error budget (P4-01)
 

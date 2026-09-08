@@ -1,6 +1,6 @@
 # Clickstream — 分阶段项目计划（中文版）
 
-状态：v0.4（Phase 3 已完成）· 最后更新：2026-09-07
+状态：v0.5（Phase 4 核心已完成）· 最后更新：2026-09-08
 
 本文档是 clickstream 作品集项目的可执行计划（中文版）。它与 `DESIGN.md`（架构 / 技术栈覆盖）以及
 `docs/` 下的文档（附加技术研究、协作与合规边界）互为补充。工作按阶段执行；每个阶段结束时应包含：
@@ -244,7 +244,7 @@ flowchart TB
 - [x] **P3-06** 拆除自动化 + 成本控制（`make eks-destroy`）
 - [x] **P3-07** 部署到 EKS、验证、拆除并记录结果
 
-## 6. Phase 4 — 可靠性 & 扩展（延伸）
+## 6. Phase 4 — 可靠性 & 扩展（核心已完成：2026-09-08；可选延后）
 
 | 项目 | 说明 |
 |---|---|
@@ -257,16 +257,16 @@ flowchart TB
 
 ### 6.1 To-dos（Linear 追踪：Milestone M4，每个条目一张 ticket）
 
-- [ ] **P4-01** SLO/SLI + 错误预算（文档）
-- [ ] **P4-02** Alertmanager + runbook + 事后复盘（PIR）模板
-- [ ] **P4-03** 压测（k6 / Locust）+ 容量估算
-- [ ] **P4-04** 混沌 / 故障演练（杀 broker/pod；记录 MTTR）
-- [ ] **P4-05** 可选：Kong API 网关
-- [ ] **P4-06** 可选：Istio 服务网格（mTLS、canary）
-- [ ] **P4-07** 可选：Flink 变体
-- [ ] **P4-08** 可选：GitOps（Argo CD / Argo Rollouts）
-- [ ] **P4-09** 可选：AWS MSK / OpenSearch
-- [ ] **P4-10** 记录结果（SLO 达成率、容量、MTTR）
+- [x] **P4-01** SLO/SLI + 错误预算（文档）
+- [x] **P4-02** Alertmanager + runbook + 事后复盘（PIR）模板
+- [x] **P4-03** 压测（k6 / Locust）+ 容量估算
+- [x] **P4-04** 混沌 / 故障演练（杀 broker/pod；记录 MTTR）
+- [ ] **P4-05** （延后）可选：Kong API 网关
+- [ ] **P4-06** （延后）可选：Istio 服务网格（mTLS、canary）
+- [ ] **P4-07** （延后）可选：Flink 变体
+- [ ] **P4-08** （延后）可选：GitOps（Argo CD / Argo Rollouts）
+- [ ] **P4-09** （延后）可选：AWS MSK / OpenSearch
+- [x] **P4-10** 记录结果（SLO 达成率、容量、MTTR）
 
 ## 7. Phase 5 — 作品集包装
 
@@ -356,5 +356,5 @@ flowchart TB
 
 ## 12. NEXT SESSION（推迟项，绝不做一半）
 
-- Phase 4：SLO/SLI、runbook、PIR、k6/Locust、混沌演练、Kong/Istio/Flink/GitOps。
+- Phase 4 可选（延后）：Kong/Istio/Flink 变体/Argo GitOps/AWS MSK/OpenSearch。
 - Phase 5：LICENSE（MIT）、架构图、面试要点、演示脚本。

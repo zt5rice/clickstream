@@ -1,6 +1,6 @@
 # Real-Time Clickstream Streaming Pipeline — Design Document
 
-Status: v0.4 (Phase 1 + Phase 2 + Phase 3 complete) · Target: Data Engineer roles (portfolio, resume-oriented)
+Status: v0.5 (Phase 1–4 core complete) · Target: Data Engineer roles (portfolio, resume-oriented)
 
 ## 1. Goal
 
@@ -229,3 +229,17 @@ of 2026-09-07:
 Real EKS run notes: `docs/eks-run-2026-09-07.md` (repo) + local experiment
 report `docs/EKS_AWS_EXPERIMENT_REPORT(_ZH)_LOCAL.md` (not pushed). Key fixes:
 Access Entry auth, EBS CSI/StorageClass, Postgres mount path, Kafka `fsGroup`.
+
+## 15. As-Built — Phase 4 (Reliability & Scale, core)
+
+Phase 4 core (M4) delivered 2026-09-08:
+
+| Ticket | Practice | Result |
+|---|---|---|
+| P4-01 | SLO/SLI + error budget | `docs/slo-sli-error-budget.md` |
+| P4-02 | Runbooks + PIR template | `docs/runbooks.md`, `docs/pir-template.md` (+ worked EKS example) |
+| P4-03 | Load testing | k6: 3,227 reqs / 46 req/s · p95 180.6 ms · 0% errors |
+| P4-04 | Chaos drills | API MTTR 21s · Kafka MTTR 33s (kind) |
+| P4-10 | Results doc | `docs/m4-results.md` |
+
+Optional heavy items (Kong/Istio/Flink/Argo/MSK/OpenSearch) deferred; see PLAN §6.
