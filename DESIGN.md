@@ -1,6 +1,6 @@
 # Real-Time Clickstream Streaming Pipeline — Design Document
 
-Status: v0.3 (Phase 1 + Phase 2 complete) · Target: Data Engineer roles (portfolio, resume-oriented)
+Status: v0.4 (Phase 1 + Phase 2 + Phase 3 complete) · Target: Data Engineer roles (portfolio, resume-oriented)
 
 ## 1. Goal
 
@@ -210,3 +210,22 @@ replacing it — Airflow/dbt work on the curated Postgres layer, Delta adds a
 local lakehouse write path from Spark, Soda/quality validate both warehouses,
 Redis hardens the API, `go_ops` is an ops CLI, Ansible prepares deployment
 nodes, and `ai_assistant` is an LLM-powered ops layer (mock by default).
+
+## 14. As-Built — Phase 3 (Deployment & Platform)
+
+Phase 3 (Linear M3) took the local pipeline onto Kubernetes and AWS. Status as
+of 2026-09-07:
+
+| Ticket | Add-on | Verified result |
+|---|---|---|
+| P3-01 | kind + core-subset manifests | cluster up; PG/CH/Redis/Kafka/API Ready; Spark Job OK |
+| P3-02 | Terraform EKS (VPC + node group) | `init`+`validate` pass; real apply in P3-07 |
+| P3-03 | Helm chart + cert-manager | chart deployed on kind; ClusterIssuer Ready |
+| P3-04 | CI/CD → GHCR | 5 images build+push on main (public packages) |
+| P3-05 | (optional, deferred) Lambda/API GW/CloudWatch | not built |
+| P3-06 | teardown + cost control | `eks-destroy`/`eks-destroy-all` + cost doc |
+| P3-07 | Real EKS deploy → verify → destroy | 55 resources; all pods Ready; `/ready` true; destroyed, EBS cleaned |
+
+Real EKS run notes: `docs/eks-run-2026-09-07.md` (repo) + local experiment
+report `docs/EKS_AWS_EXPERIMENT_REPORT(_ZH)_LOCAL.md` (not pushed). Key fixes:
+Access Entry auth, EBS CSI/StorageClass, Postgres mount path, Kafka `fsGroup`.

@@ -35,10 +35,10 @@ Measured 2026-09-02 06:54 UTC (= 2026-09-01 23:54 PDT).
 
 ## Next Steps
 
-Phase 1 (local core pipeline) and Phase 2 (data-engineering add-ons) are
-complete and verified locally. Next up: **Phase 3 — deployment & platform**
-(kind → Terraform EKS, Helm, cert-manager, CI/CD deploy) — see
-[PLAN.md](PLAN.md) §5 for the tracked milestones/tickets.
+Phases 1–3 are complete (local pipeline → data-engineering add-ons → kind/Helm/
+GHCR/Terraform + one verified EKS run). Next up: **Phase 4 — reliability &
+scale** (SLO/SLI, runbooks, load testing, chaos drills) — see
+[PLAN.md](PLAN.md) §6 for the tracked milestones/tickets.
 
 ## Live demo
 
