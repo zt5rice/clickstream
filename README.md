@@ -40,6 +40,12 @@ GHCR/Terraform + one verified EKS run). Next up: **Phase 4 — reliability &
 scale** (SLO/SLI, runbooks, load testing, chaos drills) — see
 [PLAN.md](PLAN.md) §6 for the tracked milestones/tickets.
 
+## Phase 4 add-ons — SLO/SLI + error budget (P4-01)
+
+SLI definitions (availability / p95 / freshness / DLQ) with PromQL, demo SLO
+targets and an error-budget + burn-rate policy are documented in
+[docs/slo-sli-error-budget.md](docs/slo-sli-error-budget.md).
+
 ## Live demo
 
 See [docs/demo-checklist.md](docs/demo-checklist.md) for a step-by-step checklist
