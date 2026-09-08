@@ -47,6 +47,7 @@ go_ops/bin/
 docs/PROGRESS_CHECKPOINT_LOCAL.md
 docs/TODO_TICKETS_PLAN_LOCAL.md
 docs/tech-stack-addons.md
+docs/eks-demo-evidence-local/
 
 # IDE / OS
 .DS_Store

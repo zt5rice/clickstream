@@ -53,6 +53,7 @@ module "eks" {
       min_size     = var.node_min_size
       max_size     = var.node_max_size
       instance_types = var.node_instance_types
+      capacity_type  = var.node_capacity_type
     }
   }
 

@@ -47,3 +47,13 @@ variable "node_instance_types" {
   type    = list(string)
   default = ["t3.medium"]
 }
+
+variable "node_capacity_type" {
+  description = "EKS node capacity: ON_DEMAND or SPOT (SPOT recommended for short demos)"
+  type        = string
+  default     = "ON_DEMAND"
+  validation {
+    condition     = contains(["ON_DEMAND", "SPOT"], var.node_capacity_type)
+    error_message = "node_capacity_type must be ON_DEMAND or SPOT."
+  }
+}

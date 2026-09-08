@@ -12,6 +12,9 @@ Status: code written; `terraform init` + `terraform validate` pass. Real
   `terraform-aws-modules/eks` (pinned `~> 20.0`).
 - Cost-control defaults: single NAT gateway, min 1 node, `environment=demo`
   tags; teardown with `make eks-destroy`.
+- Node capacity: set `node_capacity_type = "SPOT"` (in
+  `terraform.tfvars`) for short demos — SPOT nodes cost 60–90% less and
+  interruption is acceptable for a 2–3h verification.
 
 ## Usage
 
