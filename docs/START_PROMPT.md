@@ -1,8 +1,8 @@
 # Start Prompt — clickstream project
 
 > Copy this prompt into a new Codex task / agent to start or continue the project.
-> Working directory: `~/projects/clickstream` (note: outside the Resume
-> workspace — the new task will need write permission / escalation for this folder).
+> Working directory: this repository (a personal portfolio project). Git
+> operations on the local clone may need write permission / escalation.
 
 ---
 
@@ -14,12 +14,11 @@ streaming pipeline (Kafka + Spark/Flink + EKS) for data-engineering and data-inf
 - Code, comments, READMEs, and technical docs in English (unless I ask otherwise).
 
 ## Context — read these FIRST
-- `~/projects/clickstream/DESIGN.md` (authoritative design doc: architecture, tech-stack coverage matrix, milestones)
-- `~/projects/clickstream/README.md`
-- `~/projects/clickstream/docs/tech-stack-addons.md` (planned v1/v2 additions)
-- `~/projects/clickstream/docs/sre-reliability-addons.md` (reliability track)
-- `~/projects/clickstream/docs/collaboration-and-resources.md` (guardrails: no proprietary code, public-repo safe)
-- `docs/sample_jd/` (saved JDs to keep tech coverage aligned)
+- `DESIGN.md` (authoritative design doc: architecture, tech-stack coverage matrix, milestones)
+- `README.md`
+- `docs/tech-stack-addons.md` (planned v1/v2 additions)
+- `docs/sre-reliability-addons.md` (reliability track)
+- `docs/collaboration-and-resources.md` (guardrails: no proprietary code, public-repo safe)
 
 ## Phases (do them in order; start with Phase 1)
 
@@ -70,7 +69,7 @@ streaming pipeline (Kafka + Spark/Flink + EKS) for data-engineering and data-inf
 - Interview talking points + demo script (walk through `make up` → data flow → dashboards).
 
 ## Constraints (non-negotiable)
-- No code/config copied from any employer (employer) — all code original, generic, public-repo safe.
+- No code/config copied from any employer — all code original, generic, public-repo safe.
 - Pin every dependency; every technology must actually run and be explainable.
 - Keep it honest: small personal/portfolio project; do not overclaim production scale.
 - Core logic must have tests; run `make lint` and `make test` before finishing each phase.

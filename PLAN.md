@@ -18,7 +18,7 @@ creation happens only after user approval.
 
 - **Portfolio, not production**: a small, personal, from-scratch project. Every
   claim about scale or capability must be backed by real measurements from our
-  own runs. Never imply employer (employer) production experience.
+  own runs. Never imply any employer's production experience.
 - **Public-repo safe**: no proprietary code, configs, internal names, or metrics.
   All code is original and generic.
 - **Pin everything**: every dependency, image, and tool version is locked; every
@@ -35,7 +35,7 @@ creation happens only after user approval.
 ## 1. Tech Stack Selection
 
 What each technology is for and why we picked it (aligned with the saved job
-descriptions in `docs/` and `docs/sample_jd`).
+descriptions kept outside this repo and summarized in `docs/`).
 
 | Technology | What it is for | Why we chose it |
 |---|---|---|
@@ -302,7 +302,7 @@ diagram, public-repo hygiene, and a demo script.
 
 ### 8.1 Why synthetic
 
-- Public-repo safe: no real user data, no employer (employer) data, no PII.
+- Public-repo safe: no real user data, no employer data, no PII.
 - Deterministic and reproducible: a fixed seed regenerates identical datasets for
   tests, demos, and documentation.
 - Realistic enough to exercise the pipeline meaningfully (cardinality, skew,
