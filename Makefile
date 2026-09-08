@@ -1,5 +1,5 @@
 # clickstream - local development tooling
-.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test delta-demo quality-run go-ops-test go-ops-build ansible-check ansible-provision ai-assistant-up kind-up kind-down kind-load kind-apply kind-logs kind-topics kind-spark-check helm-lint helm-template helm-up helm-install-cert-manager eks-init eks-validate eks-plan eks-plan-destroy eks-apply eks-destroy eks-destroy-all load-test check
+.PHONY: init up down demo ps logs test test-ci lint fmt dbt-run dbt-test delta-demo quality-run go-ops-test go-ops-build ansible-check ansible-provision ai-assistant-up kind-up kind-down kind-load kind-apply kind-logs kind-topics kind-spark-check helm-lint helm-template helm-up helm-install-cert-manager eks-init eks-validate eks-plan eks-plan-destroy eks-apply eks-destroy eks-destroy-all load-test chaos-drill-api chaos-drill-kafka check
 
 # Prefer the pinned tools inside .venv when present (after `make init`).
 RUFF ?= $(if $(wildcard .venv/bin/ruff),.venv/bin/ruff,ruff)
@@ -120,6 +120,16 @@ load-test: ## Run the k6 read-API load test (needs the local stack up)
 		-v "$(PWD)/scripts/load/k6:/scripts" \
 		$(LOAD_TEST_IMAGE) run /scripts/read-api.js \
 		-e BASE_URL=http://host.docker.internal:8000
+
+chaos-drill-api: ## Chaos: delete an API pod and measure MTTR (kind)
+	@echo "CHAOS: deleting api pod at $$(date -u +%FT%TZ)"; \
+	start=$$(date +%s); \
+	kubectl -n clickstream delete pod -l app=api --wait=false >/dev/null; \
+	kubectl -n clickstream rollout status deployment/api --timeout=300s >/dev/null; \
+	echo "MTTR api-pod = $$(( $$(date +%s) - start ))s"
+
+chaos-drill-kafka: ## Chaos: delete the Kafka pod and measure MTTR (kind)
+	scripts/chaos/measure_recovery.sh pod kafka-0 clickstream
 
 eks-init: ## Initialize Terraform (downloads providers/modules)
 	cd terraform && terraform init
