@@ -46,6 +46,13 @@ SLI definitions (availability / p95 / freshness / DLQ) with PromQL, demo SLO
 targets and an error-budget + burn-rate policy are documented in
 [docs/slo-sli-error-budget.md](docs/slo-sli-error-budget.md).
 
+## Phase 4 add-ons — runbooks + PIR (P4-02)
+
+Runbooks for the main alerts (API unhealthy, freshness stale, DLQ non-empty,
+Kafka down, EKS cost guard) plus a blameless Post-Incident Review template —
+see [docs/runbooks.md](docs/runbooks.md) and
+[docs/pir-template.md](docs/pir-template.md).
+
 ## Live demo
 
 See [docs/demo-checklist.md](docs/demo-checklist.md) for a step-by-step checklist
