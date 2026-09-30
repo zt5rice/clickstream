@@ -48,6 +48,14 @@ docs/PROGRESS_CHECKPOINT_LOCAL.md
 docs/TODO_TICKETS_PLAN_LOCAL.md
 docs/tech-stack-addons.md
 docs/eks-demo-evidence-local/
+docs/EKS_AWS_EXPERIMENT_REPORT_LOCAL.md
+docs/EKS_AWS_EXPERIMENT_REPORT_ZH_LOCAL.md
+
+# Local-only interview prep notes (never publish)
+docs/interview-deep-dive-qa.md
+docs/apple-ai-sw-integration-interview-prep.md
+docs/graphatlas-interview-deep-dive-qa.md
+docs/system-design-2-week-plan.md
 
 # IDE / OS
 .DS_Store
