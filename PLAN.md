@@ -285,18 +285,19 @@ Each addition must actually run locally and be documented in README + DESIGN.md.
 - [ ] **P4-09** (deferred) Optional: AWS MSK / OpenSearch
 - [x] **P4-10** Document results (SLO compliance, capacity, MTTR)
 
-## 7. Phase 5 — Portfolio Packaging
+## 7. Phase 5 — Portfolio Packaging (core complete: 2026-10-02)
 
 Goal: make the repo share-ready and interview-ready — final metrics, architecture
 diagram, public-repo hygiene, and a demo script.
 
 ### 7.1 To-dos (tracked in Linear: Milestone M5, one ticket per item)
 
-- [ ] **P5-01** Final measured metrics (throughput, latency, lag, cost) in README
-- [ ] **P5-02** Architecture diagram + design decisions summary
-- [ ] **P5-03** Public-repo hygiene: MIT LICENSE, no employer IP, README states personal/portfolio project
-- [ ] **P5-04** Interview talking points + demo script (`make up` → data flow → dashboards)
-- [ ] **P5-05** Final repo review + README polish
+- [x] **P5-01** Final measured metrics (throughput, latency, lag, cost) in README
+- [x] **P5-02** Architecture diagram + design decisions summary
+- [x] **P5-03** Public-repo hygiene: MIT LICENSE, no employer IP, README states personal/portfolio project
+- [x] **P5-04** Interview talking points + demo script (`make up` → data flow → dashboards)
+  — deliverables kept **local-only** (gitignored), not published
+- [x] **P5-05** Final repo review + README polish
 
 ## 8. Sample Data — Synthetic Clickstream
 
@@ -383,5 +384,11 @@ environment, and configuration used. No numbers are claimed without a measured r
 
 ## 12. NEXT SESSION (deferred, never half-added)
 
-- Phase 4 optional (deferred): Kong/Istio/Flink variant/Argo GitOps/AWS MSK/OpenSearch.
-- Phase 5: LICENSE (MIT), architecture diagram, interview talking points, demo script.
+- Phase 3 optional (ZHA-153): AWS Lambda + API Gateway + CloudWatch (DLQ alert
+  handler / freshness checker).
+- Phase 4 optional (deferred): Kong / Istio / Flink variant / Argo CD GitOps /
+  AWS MSK / OpenSearch.
+- EKS follow-ups from the 2026-09-07 run: encode the Access Entry, EBS CSI addon
+  and default StorageClass into Terraform so a fresh cluster comes up clean.
+- Longer-running goal: a monitored 7-day demo to turn the short-run SLO
+  snapshots into a real freshness / error-budget window.
